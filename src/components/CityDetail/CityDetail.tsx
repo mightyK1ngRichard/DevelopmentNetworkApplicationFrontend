@@ -15,7 +15,7 @@ const CityDetail: FC = () => {
     useEffect(() => {
         fetchCity().then().catch((err) => {
             console.error(err);
-            let previewID: number 
+            let previewID: number
             if (params.id !== undefined) {
                 previewID = parseInt(params.id, 10) - 1;
             } else {
