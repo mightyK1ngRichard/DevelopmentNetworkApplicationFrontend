@@ -31,7 +31,7 @@ const CitiesList: FC = () => {
         <div className="card-grid">
             <List items={cities} renderItem={(city: ICity) =>
                 <CityItem city={city} onClick={(num) => {
-                    window.location.href = `http://localhost:5173/cities/${num}`
+                    window.location.href = `/DevelopmentNetworkApplicationFrontend/cities/${num}`
                 }}
                 />
             }

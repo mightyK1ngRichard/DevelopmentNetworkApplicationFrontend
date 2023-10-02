@@ -6,11 +6,15 @@ import CityDetail from "./components/CityDetail/CityDetail.tsx";
 
 const router = createBrowserRouter([
     {
-        path: '/cities',
+        path: '/DevelopmentNetworkApplicationFrontend',
+        element:  <CitiesList/>
+    },
+    {
+        path: '/DevelopmentNetworkApplicationFrontend/cities',
         element: <CitiesList/>
     },
     {
-        path: '/cities/:id',
+        path: '/DevelopmentNetworkApplicationFrontend/cities/:id',
         element: <CityDetail/>
     }
 ])
