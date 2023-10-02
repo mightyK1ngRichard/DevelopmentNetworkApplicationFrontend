@@ -15,8 +15,12 @@ const CityDetail: FC = () => {
     useEffect(() => {
         fetchCity().then().catch((err) => {
             console.error(err);
-            // Если ошибка, подгружаем моки.
-            const previewID: number = params.id - 1
+            let previewID: number 
+            if (params.id !== undefined) {
+                previewID = parseInt(params.id, 10) - 1;
+            } else {
+                previewID = 0
+            }
             setCity(mockCities[previewID])
         });
     }, [params.id]);
