@@ -7,7 +7,7 @@ import CityDetail from "./components/CityDetail/CityDetail.tsx";
 const router = createBrowserRouter([
     {
         path: '/DevelopmentNetworkApplicationFrontend',
-        element:  <CitiesList/>
+        element: <CitiesList/>
     },
     {
         path: '/DevelopmentNetworkApplicationFrontend/cities',

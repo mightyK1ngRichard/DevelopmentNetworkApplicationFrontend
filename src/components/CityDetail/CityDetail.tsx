@@ -1,7 +1,6 @@
 import {FC, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import axios from 'axios';
-import {ICity, ICityResponse, mockCities} from '../../models/models.ts';
+import {ICity, mockCities} from '../../models/models.ts';
 import './CityCard.css'
 
 const CityDetail: FC = () => {
@@ -13,30 +12,29 @@ const CityDetail: FC = () => {
     }
 
     useEffect(() => {
-        fetchCity().then().catch((err) => {
+        fetchCity().catch((err) => {
             console.error(err);
-            let previewID: number
-            if (params.id !== undefined) {
-                previewID = parseInt(params.id, 10) - 1;
-            } else {
-                previewID = 0
-            }
-            setCity(mockCities[previewID])
+            const previewID = params.id !== undefined ? parseInt(params.id, 10) - 1 : 0;
+            setCity(mockCities[previewID]);
         });
     }, [params.id]);
 
     async function fetchCity() {
         try {
-            const response = await axios.get<ICityResponse>(
-                `http://localhost:7070/api/v3/cities?city=${params.id}`
-            );
-            setCity(response.data.city);
+            const response = await fetch(`http://localhost:7070/api/v3/cities?city=${params.id}`);
 
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            setCity(data.city);
         } catch (error) {
             console.error('Error fetching city data', error);
             throw error;
         }
     }
+
 
     if (!city) {
         return <div>Loading...</div>;

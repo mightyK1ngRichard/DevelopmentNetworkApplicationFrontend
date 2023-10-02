@@ -42,7 +42,7 @@ p {
     color: #B3B8CD;
     padding: 30px;
     position: relative;
-    width: 550px;
+    width: 50%;
     max-width: 100%;
     text-align: center;
 }
@@ -76,6 +76,7 @@ button.primary {
     font-family: Montserrat, sans-serif;
     font-weight: 500;
     padding: 10px 25px;
+    margin-right: 10px;
 }
 
 button.primary.ghost {
