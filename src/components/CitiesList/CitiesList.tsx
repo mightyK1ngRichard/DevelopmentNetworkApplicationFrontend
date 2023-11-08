@@ -7,8 +7,10 @@ import './CitiesList.css'
 
 const CitiesList: FC = () => {
     const [cities, setCities] = useState<ICity[]>([]);
+    const [searchValue, setSearchValue] = useState<string>('');
+    const [serverIsWork, setServerStatus] = useState<boolean>(false);
     const navigate = useNavigate();
-    let searchValue = ''
+
     useEffect(() => {
         fetchCities().catch((err) => {
             console.error(err);
@@ -21,36 +23,41 @@ const CitiesList: FC = () => {
                 setCities(mockCities);
             }
         });
-    }, []);
+    }, [searchValue, serverIsWork]);
 
-    async function fetchCities() {
+    const fetchCities = async () => {
         try {
             const currentURL = window.location.href;
             const url = new URL(currentURL);
             let apiUrl = 'http://localhost:7070/api/v3/cities';
 
             if (url.searchParams.has('search')) {
-                searchValue = url.searchParams.get('search') ?? '';
+                setSearchValue(url.searchParams.get('search') ?? '')
                 apiUrl += `?search=${searchValue}`;
             }
 
-            const response = await fetch(apiUrl);
+            const response = await fetch(apiUrl, {
+                method: "GET",
+                signal: AbortSignal.timeout(1000)
+            })
 
             if (!response.ok) {
+                setServerStatus(false)
                 throw new Error('Network response was not ok');
             }
-
             const data = await response.json();
+            setServerStatus(true)
             setCities(data.cities);
         } catch (e) {
             console.error(e);
+            setServerStatus(false)
             throw e;
         }
     }
 
     return (
         <List items={cities} renderItem={(city: ICity) =>
-            <CityItem city={city} onClick={(num) => navigate(`/DevelopmentNetworkApplicationFrontend/cities/${num}`)}/>
+            <CityItem city={city} isServer={serverIsWork} onClick={(num) => navigate(`/DevelopmentNetworkApplicationFrontend/cities/${num}`)}/>
         }
         />
     );
