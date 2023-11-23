@@ -14,8 +14,8 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const searchValue = (e.currentTarget.elements.namedItem('search') as HTMLInputElement)?.value;
-        handleSearchValue(searchValue)
+        const inputValue = (e.currentTarget.elements.namedItem('search') as HTMLInputElement)?.value;
+        handleSearchValue(inputValue);
     };
 
     return (
@@ -33,6 +33,7 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
                     </Nav>
                     <Form onSubmit={handleSearch} className="d-flex">
                         <FormControl
+                            id={'search-text-field'}
                             type="text"
                             name="search"
                             placeholder="Поиск городов"

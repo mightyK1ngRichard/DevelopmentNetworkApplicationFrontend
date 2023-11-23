@@ -22,14 +22,7 @@ const CitiesList: FC<CitiesListProps> = ({setPage, searchValue, resetSearchValue
         fetchCities()
             .catch((err) => {
                 console.log(err)
-                if (searchValue) {
-                    const filteredCities = mockCities.filter(city =>
-                        city.city_name?.toLowerCase().includes((searchValue ?? '').toLowerCase())
-                    );
-                    setCities(filteredCities);
-                } else {
-                    setCities(mockCities);
-                }
+                filterMockData()
             });
     }, [searchValue, reloadPage]);
 
@@ -48,10 +41,31 @@ const CitiesList: FC<CitiesListProps> = ({setPage, searchValue, resetSearchValue
 
         const data = await response.json();
         setServerStatus(true)
-        setCities(data.cities ?? []);
         if (data.cities == null) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            document.getElementById('search-text-field').value = ""
             alert("Данных нету")
             resetSearchValue()
+        }
+        setCities(data.cities ?? []);
+    }
+
+    const filterMockData = () => {
+        if (searchValue) {
+            const filteredCities = mockCities.filter(city =>
+                city.city_name?.toLowerCase().includes((searchValue ?? '').toLowerCase())
+            );
+            if (filteredCities.length === 0) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                document.getElementById('search-text-field').value = ""
+                alert("Данных нету")
+                resetSearchValue()
+            }
+            setCities(filteredCities);
+        } else {
+            setCities(mockCities);
         }
     }
 
