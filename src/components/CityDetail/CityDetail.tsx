@@ -1,22 +1,64 @@
 import {FC, useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import {ICity, mockCities} from '../../models/models.ts';
 import './CityCard.css'
 
-const CityDetail: FC = () => {
+interface CityDetailProps {
+    setPage: (name: string, id: number) => void
+}
+
+const CityDetail: FC<CityDetailProps> = ({setPage}) => {
     const params = useParams();
     const [city, setCity] = useState<ICity | null>(null);
+    const navigate = useNavigate();
+
     const handleDelete = () => {
-        console.log(`Tap! ${city?.id}`)
-        // TODO: Удаление
+        navigate('/cities');
+        DeleteData()
+            .then(() => {
+                console.log(`City with ID ${city?.id} successfully deleted.`);
+            })
+            .catch(error => {
+                console.error(`Failed to delete city with ID ${city?.id}: ${error}`);
+                navigate('/cities');
+            });
+    }
+
+    const DeleteData = async () => {
+        try {
+            const response = await fetch('http://localhost:7070/api/v3/cities/delete/' + city?.id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.status === 200) {
+                console.log('Город успешно удален');
+                window.location.reload();
+            } else {
+                console.error('Произошла ошибка при удалении города');
+            }
+
+        } catch (error) {
+            console.error('Произошла ошибка сети', error);
+        }
+    }
+
+    const BackHandler = () => {
+        navigate('/cities');
     }
 
     useEffect(() => {
-        fetchCity().catch((err) => {
-            console.error(err);
-            const previewID = params.id !== undefined ? parseInt(params.id, 10) - 1 : 0;
-            setCity(mockCities[previewID]);
-        });
+        fetchCity()
+            .catch((err) => {
+                console.error(err);
+                const previewID = params.id !== undefined ? parseInt(params.id, 10) - 1 : 0;
+                const mockCity = mockCities[previewID]
+                setPage(mockCity.city_name ?? "Без названия", mockCity.id)
+                setCity(mockCity);
+            });
+
     }, [params.id]);
 
     async function fetchCity() {
@@ -28,6 +70,7 @@ const CityDetail: FC = () => {
             }
 
             const data = await response.json();
+            setPage(data.city?.city_name ?? "Без названия", data.city.id)
             setCity(data.city);
         } catch (error) {
             console.error('Error fetching city data', error);
@@ -56,12 +99,12 @@ const CityDetail: FC = () => {
                     <p>{city?.description}</p>
                     <img
                         className="delete-button"
-                        src="http://localhost:7070/static/img/deleteTrash.png"
+                        src="/deleteTrash.png"
                         alt="Delete"
                         onClick={handleDelete}
                     />
                     <div className="buttons">
-                        <button className="primary">Следить</button>
+                        <button className="primary" onClick={BackHandler}>Назад</button>
                         <button className="primary ghost">Записаться</button>
                     </div>
                 </div>

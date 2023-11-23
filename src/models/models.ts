@@ -1,7 +1,6 @@
 export interface ICities {
     cities: ICity[],
     status: string
-    // basket_id?: string
 }
 
 export interface ICityResponse {
