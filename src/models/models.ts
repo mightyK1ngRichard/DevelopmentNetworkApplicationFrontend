@@ -13,6 +13,11 @@ export interface IStatus {
     status_name: string,
 }
 
+export interface ICityWithBasket {
+    basket_id: number
+    cities: ICity[]
+}
+
 export interface ICity {
     id: number,
     city_name?: string,

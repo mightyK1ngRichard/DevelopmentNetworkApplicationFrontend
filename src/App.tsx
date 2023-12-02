@@ -4,9 +4,17 @@ import CitiesList from "./components/CitiesList/CitiesList.tsx";
 import CityDetail from "./components/CityDetail/CityDetail.tsx";
 import {useState} from "react";
 import BreadCrumbs, {IBreadCrumb} from "./components/BreadCrumbs/BreadCrumbs.tsx";
+import {useAppDispatch, useAppSelector} from "./hooks/redux.ts";
+import {citySlice} from "./store/reducers/CitySlice.ts";
+// import {useAppSelector} from "./hooks/redux.ts";
 
 
 function App() {
+    // const {cities, error, isLoading} = useAppSelector(state => state.cityReducer)
+    const {count} = useAppSelector(state => state.cityReducer)
+    const {increase} = citySlice.actions
+
+    const dispatch = useAppDispatch()
     const citiesPage = {name: 'Города', to: 'cities'};
     const [searchValue, setSearchValue] = useState('')
     const [pages, setPage] = useState<IBreadCrumb[]>([citiesPage])
@@ -21,6 +29,13 @@ function App() {
         <>
             <NavigationBar handleSearchValue={(value) => setSearchValue(value)}/>
             <BreadCrumbs pages={pages}/>
+            <div>
+                {count}
+                <div>
+                    <button onClick={() => dispatch(increase(10))}> Increase </button>
+                </div>
+            </div>
+
             <>
                 <Routes>
                     <Route path="/" element={<Navigate to="cities"/>}/>

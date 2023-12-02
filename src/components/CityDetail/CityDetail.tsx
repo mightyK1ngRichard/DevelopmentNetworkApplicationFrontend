@@ -1,7 +1,8 @@
-import {FC, useEffect, useState} from 'react';
+import {FC, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
-import {ICity, mockCities} from '../../models/models.ts';
 import './CityCard.css'
+import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
+import {fetchCity} from "../../store/reducers/ActionCreator.ts";
 
 interface CityDetailProps {
     setPage: (name: string, id: number) => void
@@ -9,7 +10,9 @@ interface CityDetailProps {
 
 const CityDetail: FC<CityDetailProps> = ({setPage}) => {
     const params = useParams();
-    const [city, setCity] = useState<ICity | null>(null);
+    // const [city, setCity] = useState<ICity | null>(null);
+    const dispatch = useAppDispatch()
+    const {city, isLoading, error} = useAppSelector(state => state.cityReducer)
     const navigate = useNavigate();
 
     const handleDelete = () => {
@@ -50,43 +53,14 @@ const CityDetail: FC<CityDetailProps> = ({setPage}) => {
     }
 
     useEffect(() => {
-        fetchCity()
-            .catch((err) => {
-                console.error(err);
-                const previewID = params.id !== undefined ? parseInt(params.id, 10) - 1 : 0;
-                const mockCity = mockCities[previewID]
-                setPage(mockCity.city_name ?? "Без названия", mockCity.id)
-                setCity(mockCity);
-            });
-
+        dispatch(fetchCity(`${params.id}`, setPage))
     }, [params.id]);
 
-    async function fetchCity() {
-        try {
-            const response = await fetch(`http://localhost:7070/api/v3/cities?city=${params.id}`);
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
-            setPage(data.city?.city_name ?? "Без названия", data.city.id)
-            setCity(data.city);
-        } catch (error) {
-            console.error('Error fetching city data', error);
-            throw error;
-        }
-    }
-
-
-    if (!city) {
-        return <div>Loading...</div>;
-    }
-
     return (
-        !city
-            ? <div>Loading...</div>
-            : <div className="city-card-body">
+        <>
+            {isLoading && <h1> Загрузка данных .... </h1>}
+            {error && <h1>Ошибка {error} </h1>}
+            {<div className="city-card-body">
                 <div className="card-container">
                     <span className="pro">Город</span>
                     <img
@@ -108,7 +82,8 @@ const CityDetail: FC<CityDetailProps> = ({setPage}) => {
                         <button className="primary ghost">Записаться</button>
                     </div>
                 </div>
-            </div>
+            </div>}
+        </>
     );
 };
 
