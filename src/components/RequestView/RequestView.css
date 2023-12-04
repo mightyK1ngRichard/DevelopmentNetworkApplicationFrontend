@@ -69,7 +69,6 @@ body {
     margin-bottom: 20px;
     margin-right: 250px;
     width: 300px;
-    /*height: 140px;*/
     margin-top: 20px;
 }
 
@@ -77,7 +76,7 @@ body {
     margin: 0;
     padding: 8px 10px;
     display: block;
-    width: 100%; /* Occupy full width */
+    width: 100%;
 }
 
 .dates-info p:first-child {
@@ -93,5 +92,5 @@ body {
     height: 40px;
     border-radius: 50%;
     margin-right: 10px;
-    margin-bottom: 10px; /* Add margin at the bottom */
+    margin-bottom: 10px;
 }

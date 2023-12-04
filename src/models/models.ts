@@ -53,7 +53,9 @@ export interface IHike {
     date_approve: string,
     date_start_hike: string,
     user_id: number,
+    status_id: number,
     description: string,
+    status: IStatus,
     leader: string,
     destination_hikes: IDestinationHikes[],
     user: IUser,
@@ -75,8 +77,7 @@ export interface IRequest {
 }
 
 export interface IHikeResponse {
-    hikes?: IHike[]
-    hike?: IHike
+    hikes: IHike[]
     status: string
 }
 

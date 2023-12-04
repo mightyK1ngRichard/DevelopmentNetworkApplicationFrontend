@@ -1,28 +1,27 @@
 import {FC} from "react";
 import './TableView.css'
 import {IDestinationHikes} from "../../models/models.ts";
-import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
+import {useAppDispatch} from "../../hooks/redux.ts";
 import {deleteHikeById} from "../../store/reducers/ActionCreator.ts";
-import MyComponent from "../Popup/Popover.tsx";
-import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
+import {citySlice} from "../../store/reducers/CitySlice.ts";
 
 interface TableViewProps {
+    status: number
     destHikes: IDestinationHikes[]
 }
 
-const TableView: FC<TableViewProps> = ({destHikes}) => {
+const TableView: FC<TableViewProps> = ({destHikes, status}) => {
     const dispatch = useAppDispatch()
-    const {isLoading, error} = useAppSelector(state => state.hikeReducer)
+    const {minus} = citySlice.actions
 
     const handleDelete = (id: number) => {
+        dispatch(minus())
         dispatch(deleteHikeById(id))
     }
 
     return (
         <>
-            {isLoading && <LoadAnimation/>}
-            {error != "" && <MyComponent isError={true} message={error}/>}
-            {error === "" && <table>
+            <table>
                 <thead>
                 <tr>
                     <th className="number">Номер</th>
@@ -40,18 +39,20 @@ const TableView: FC<TableViewProps> = ({destHikes}) => {
                         </td>
                         <td className="city-name-td">{item.city.city_name}</td>
                         <td>{item.city.description}</td>
-                        <td className="delete-td">
-                            <img
-                                className="delete-button-td"
-                                src="/deleteTrash.png"
-                                alt="Delete"
-                                onClick={() => handleDelete(item.id)}
-                            />
-                        </td>
+                        {
+                            status != 2 && <td className="delete-td">
+                                <img
+                                    className="delete-button-td"
+                                    src="/dustbin.png"
+                                    alt="Delete"
+                                    onClick={() => handleDelete(item.id)}
+                                />
+                            </td>
+                        }
                     </tr>
                 ))}
                 </tbody>
-            </table>}
+            </table>
         </>
     );
 };

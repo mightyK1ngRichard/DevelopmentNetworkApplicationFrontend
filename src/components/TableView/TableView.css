@@ -3,21 +3,21 @@ table {
     margin-left: 80px;
     margin-right: 80px;
     border-collapse: collapse;
-    background-color: #000000; /* Dark background color */
-    color: #fff; /* Light text color */
+    background-color: #000000;
+    color: #fff;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.25); /* Adjust shadow color */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
 }
 
 th, td {
-    border: 1px solid #1f1f1f; /* Darker border color */
+    border: 1px solid #1f1f1f;
     padding: 12px;
     text-align: left;
 }
 
 th {
-    background-color: rgba(4, 0, 58, 0.66); /* Darker background color for header */
+    background-color: rgba(4, 0, 58, 0.66);
 }
 
 .city-name-td {
@@ -29,7 +29,6 @@ th {
     padding: 0;
     margin: 0;
     border: none;
-    background: #ffffff;
 }
 
 .delete-button-td img {
@@ -39,8 +38,7 @@ th {
 }
 
 .delete-button-td:hover {
-    /*filter: brightness(1);*/
-    background: #f50000;
+    box-shadow: 0 0 10px rgba(216, 52, 255, 0.99);
 }
 
 .image-td img {

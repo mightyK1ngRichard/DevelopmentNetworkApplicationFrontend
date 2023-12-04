@@ -1,38 +1,26 @@
 import {FC} from 'react';
 import {ICity} from '../../models/models.ts';
 import './CardItem.css'
+import {addCityIntoHike} from "../../store/reducers/ActionCreator.ts";
+import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
+import {citySlice} from "../../store/reducers/CitySlice.ts";
 
 
 interface CityItemProps {
     city: ICity;
     onClick: (num: number) => void,
     isServer: boolean
-    reloadPage: () => void
 }
 
-const CityItem: FC<CityItemProps> = ({city, onClick, isServer, reloadPage}) => {
-    const deleteClickHandler = () => {
-        DeleteData()
-            .then(() => {
-                console.log(`City with ID ${city.id} successfully deleted.`);
-            })
-            .catch(error => {
-                alert(`Failed to delete city with ID ${city.id}: ${error}`)
-            });
-    }
+const CityItem: FC<CityItemProps> = ({city, onClick, isServer}) => {
 
-    const DeleteData = async () => {
-        const response = await fetch('http://localhost:7070/api/v3/cities/delete/' + city.id, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        if (response.status === 200) {
-            reloadPage()
-            return
-        }
-        throw new Error(`status code = ${response.status}`);
+    const dispatch = useAppDispatch()
+    const {increase} = citySlice.actions
+    const {serialNumber} = useAppSelector(state => state.cityReducer)
+
+    const plusClickHandler = () => {
+        dispatch(increase())
+        dispatch(addCityIntoHike(city.id, serialNumber, city.city_name ?? "Без названия"))
     }
 
     return (
@@ -45,10 +33,10 @@ const CityItem: FC<CityItemProps> = ({city, onClick, isServer, reloadPage}) => {
                 id={`photo-${city.id}`}
             />
             {isServer && (
-                <div className="circle" onClick={deleteClickHandler}>
+                <div className="circle" onClick={plusClickHandler}>
                     <img
-                        src="/deleteTrash.png"
-                        alt="Del"
+                        src="/plus.png"
+                        alt="+"
                         className="deleted-trash"
                     />
                 </div>
