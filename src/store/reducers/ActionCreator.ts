@@ -11,7 +11,7 @@ import {
 import {citySlice} from "./CitySlice.ts"
 import {hikeSlice} from "./HikeSlice.ts";
 
-const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDE3MjU3NjMsImlhdCI6MTcwMTcyMjE2MywiaXNzIjoiYml0b3AtYWRtaW4iLCJ1c2VyX2lkIjoxMywiUm9sZSI6MH0.CKmeDnkt8lPRO8FG7NwOOiLDIhVMh0Qxt9WfTV1TKH0`;
+const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDE3MzU2NDYsImlhdCI6MTcwMTczMjA0NiwiaXNzIjoiYml0b3AtYWRtaW4iLCJ1c2VyX2lkIjoxMywiUm9sZSI6MH0.H4qbFhjuAOimD3mxR7I6V0Rxnom9QBvrW2Fh0U2hruQ`;
 
 export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatch) => {
     try {
@@ -19,10 +19,66 @@ export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatc
         const response = await axios.get<ICityWithBasket>('/api/v3/cities' + `?search=${searchValue ?? ''}`)
         dispatch(citySlice.actions.citiesFetched(response.data.cities))
     } catch (e) {
-        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}\nПодождите 6 секунд`))
+        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}`))
         dispatch(citySlice.actions.citiesFetched(filterMockData(searchValue)))
     }
 }
+
+export const addCityIntoHike = (cityId: number, serialNumber: number, cityName: string) => async (dispatch: AppDispatch) => {
+    const config = {
+        method: "post",
+        url: "/api/v3/cities/add-city-into-hike",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+            city_id: cityId,
+            serial_number: serialNumber
+        }
+    }
+
+    try {
+        dispatch(citySlice.actions.citiesFetching())
+        const response = await axios(config);
+        const errorText = response.data.description ?? ""
+        const successText = errorText || `Город "${cityName}" добавлен`
+        dispatch(citySlice.actions.cityAddedIntoHike([errorText, successText]));
+        setTimeout(() => {
+            dispatch(citySlice.actions.cityAddedIntoHike(['', '']));
+        }, 6000);
+    } catch (e) {
+        dispatch(citySlice.actions.citiesFetchedError(`${e}`))
+    }
+}
+
+export const makeHike = () => async (dispatch: AppDispatch) => {
+    const config = {
+        method: "put",
+        url: "/api/v3/hikes/update/status-for-user",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+            status_id: 2
+        }
+    }
+    try {
+        dispatch(hikeSlice.actions.hikesFetching())
+        const response = await axios(config);
+        const errorText = response.data.description ?? ""
+        const successText = errorText || `Заявка создана`
+        dispatch(hikeSlice.actions.hikesUpdated([errorText, successText]));
+        if (successText != "") {
+            dispatch(fetchHikes())
+        }
+        setTimeout(() => {
+            dispatch(hikeSlice.actions.hikesUpdated(['', '']));
+        }, 6000);
+    } catch (e) {
+        dispatch(hikeSlice.actions.hikesDeleteError(`${e}`))
+    }
+}
+
 
 export const fetchHikes = () => async (dispatch: AppDispatch) => {
     try {
@@ -32,8 +88,9 @@ export const fetchHikes = () => async (dispatch: AppDispatch) => {
                 Authorization: `Bearer ${accessToken}`
             }
         });
+
         const transformedResponse: IRequest = {
-            hikes: response.data.hikes || [response.data.hike!],
+            hikes: response.data.hikes,
             status: response.data.status
         };
 

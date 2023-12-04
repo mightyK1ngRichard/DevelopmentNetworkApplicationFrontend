@@ -5,7 +5,7 @@ import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {
     convertServerDateToInputFormat,
     emptyString,
-    fetchHikes,
+    fetchHikes, makeHike,
     updateHike
 } from "../../store/reducers/ActionCreator.ts";
 import {IHike} from "../../models/models.ts";
@@ -30,6 +30,10 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
         dispatch(fetchHikes());
     }, []);
 
+    const handleMakeRequest = () => {
+        dispatch(makeHike())
+    }
+
     const handleSave = (id: number, hike: IHike) => {
         dispatch(
             updateHike(
@@ -53,6 +57,7 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                 hike.hikes.map((singleHike, index) => (
                     <div key={index} className='card-block'>
                         <div className="card">
+                            <h3>Статус: {singleHike.status.status_name}</h3>
                             <div className="info">
                                 <div className="author-info">
                                     <img src={singleHike.user.image_url} alt="Фото Автора" className="author-img"/>
@@ -71,6 +76,7 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                                             className="form-control"
                                             value={startHikeDate || convertServerDateToInputFormat(singleHike.date_start_hike)}
                                             onChange={(e) => setStartHikeDate(e.target.value)}
+                                            disabled={singleHike.status_id == 2}
                                         />
                                     </p>
                                     <p>
@@ -80,15 +86,17 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                                             className="form-control"
                                             value={endHikeDate || convertServerDateToInputFormat(singleHike.date_end)}
                                             onChange={(e) => setEndHikeDate(e.target.value)}
+                                            disabled={singleHike.status_id == 2}
                                         />
                                     </p>
                                     <p>
                                         Лидер похода:
                                         <input
                                             type="text"
-                                            className="form-control"
+                                            className="form-control bg-black text-white"
                                             value={leader == "$" ? singleHike.leader : leader}
                                             onChange={(e) => setLeader(e.target.value)}
+                                            disabled={singleHike.status_id == 2}
                                         />
                                     </p>
                                 </div>
@@ -97,30 +105,45 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                             <div className="detail-info">
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="form-control bg-black text-white"
                                     value={hikeName == "$" ? singleHike.hike_name : hikeName}
                                     onChange={(e) => setHikeName(e.target.value)}
                                     style={{marginBottom: '20px'}}
+                                    disabled={singleHike.status_id == 2}
                                 />
                                 <textarea
-                                    className="form-control description-text-info dark-theme"
+                                    className="form-control description-text-info bg-black text-white"
                                     style={{height: "200px"}}
                                     value={description == "$" ? singleHike.description : description}
                                     onChange={(e) => setDescription(e.target.value)}
+                                    disabled={singleHike.status_id == 2}
                                 ></textarea>
                             </div>
                             <div style={{textAlign: 'right'}}>
-                                <button
+                                {singleHike.status_id != 2 && <button
                                     type="button"
                                     className="btn btn-outline-light"
                                     onClick={() => handleSave(singleHike.id, singleHike)}
                                     style={{width: '150px', marginTop: '15px'}}
                                 >
                                     Сохранить
-                                </button>
+                                </button>}
                             </div>
                         </div>
-                        <TableView destHikes={singleHike.destination_hikes}/>
+                        <TableView destHikes={singleHike.destination_hikes} status={singleHike.status_id}/>
+                        {
+                            singleHike.status_id != 2 &&
+                            <div style={{textAlign: 'right'}}>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-light"
+                                    onClick={handleMakeRequest}
+                                    style={{width: '150px', marginTop: '25px', marginRight: '80px'}}
+                                >
+                                    Сохранить
+                                </button>
+                            </div>
+                        }
                     </div>
                 ))}
         </>

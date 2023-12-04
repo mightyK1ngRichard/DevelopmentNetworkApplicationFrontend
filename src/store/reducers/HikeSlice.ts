@@ -21,7 +21,6 @@ export const hikeSlice = createSlice({
     reducers: {
         hikesFetching(state) {
             state.isLoading = true
-            state.error = ''
         },
         hikesFetched(state, action: PayloadAction<IRequest>) {
             state.isLoading = false
@@ -30,7 +29,9 @@ export const hikeSlice = createSlice({
         },
         hikesDeleteSuccess(state, action: PayloadAction<IDeleteDestinationHike>) {
             state.isLoading = false
-            state.error = action.payload.description ?? ""
+            const text = action.payload.description ?? ""
+            state.error = text
+            state.success = "Город успешно удалён из заявки"
         },
         hikesUpdated(state, action: PayloadAction<string[]>) {
             state.isLoading = false
@@ -44,7 +45,6 @@ export const hikeSlice = createSlice({
         hikesFetchedError(state, action: PayloadAction<string>) {
             state.isLoading = false
             state.error = action.payload
-            state.hike = null
         },
     },
 })
