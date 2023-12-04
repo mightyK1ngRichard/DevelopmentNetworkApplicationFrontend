@@ -25,7 +25,6 @@ export const citySlice = createSlice({
         },
         citiesFetched(state, action: PayloadAction<ICity[]>) {
             state.isLoading = false
-            state.error = ''
             state.cities = action.payload
         },
         citiesFetchedError(state, action: PayloadAction<string>) {

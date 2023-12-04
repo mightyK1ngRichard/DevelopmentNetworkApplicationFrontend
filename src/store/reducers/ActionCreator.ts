@@ -20,9 +20,7 @@ export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatc
         dispatch(citySlice.actions.citiesFetched(response.data.cities))
     } catch (e) {
         dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}\nПодождите 6 секунд`))
-        setTimeout(() => {
-            dispatch(citySlice.actions.citiesFetched(filterMockData(searchValue)))
-        }, 6000);
+        dispatch(citySlice.actions.citiesFetched(filterMockData(searchValue)))
     }
 }
 
