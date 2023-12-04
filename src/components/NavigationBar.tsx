@@ -28,7 +28,7 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
                             <Link to="/cities" className="nav-link ps-0">Города</Link>
                         </Nav.Item>
                         <Nav.Item>
-                            <Link to="/cities" className="nav-link">Походы</Link>
+                            <Link to="/request" className="nav-link">Заявка</Link>
                         </Nav.Item>
                     </Nav>
                     <Form onSubmit={handleSearch} className="d-flex">

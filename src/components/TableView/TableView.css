@@ -1,0 +1,59 @@
+table {
+    width: calc(100% - 160px);
+    margin-left: 80px;
+    margin-right: 80px;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.city-name-td {
+    width: 240px;
+}
+
+.delete-td {
+    width: 30px;
+}
+
+.delete-button-td {
+    width: 40px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+}
+
+.delete-button-td:hover {
+    box-shadow: 0 0 10px rgba(0, 168, 255, 0.96);
+}
+
+.delete-td {
+    width: 40px;
+}
+
+.image-td img {
+    width: 200px;
+    height: 150px;
+    display: block;
+    margin: 0 auto;
+}
+
+.number {
+    width: 20px;
+}
+
+tbody tr:hover {
+    background-color: #f1f0f0;
+}

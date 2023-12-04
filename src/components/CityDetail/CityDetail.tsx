@@ -10,7 +10,6 @@ interface CityDetailProps {
 
 const CityDetail: FC<CityDetailProps> = ({setPage}) => {
     const params = useParams();
-    // const [city, setCity] = useState<ICity | null>(null);
     const dispatch = useAppDispatch()
     const {city, isLoading, error} = useAppSelector(state => state.cityReducer)
     const navigate = useNavigate();
