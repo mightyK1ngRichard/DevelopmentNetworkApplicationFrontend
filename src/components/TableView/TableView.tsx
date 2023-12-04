@@ -3,6 +3,8 @@ import './TableView.css'
 import {IDestinationHikes} from "../../models/models.ts";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {deleteHikeById} from "../../store/reducers/ActionCreator.ts";
+import MyComponent from "../Popup/Popover.tsx";
+import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
 
 interface TableViewProps {
     destHikes: IDestinationHikes[]
@@ -18,8 +20,8 @@ const TableView: FC<TableViewProps> = ({destHikes}) => {
 
     return (
         <>
-            {isLoading && <h1> Загрузка данных .... </h1>}
-            {error !== "" && <h1> {error} </h1>}
+            {isLoading && <LoadAnimation/>}
+            {error != "" && <MyComponent isError={true} message={error}/>}
             {error === "" && <table>
                 <thead>
                 <tr>

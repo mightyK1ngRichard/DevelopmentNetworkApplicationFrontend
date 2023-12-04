@@ -5,12 +5,14 @@ interface HikeState {
     hike: IRequest | null;
     isLoading: boolean;
     error: string;
+    success: string;
 }
 
 const initialState: HikeState = {
     hike: null,
     isLoading: false,
     error: '',
+    success: ''
 }
 
 export const hikeSlice = createSlice({
@@ -29,6 +31,11 @@ export const hikeSlice = createSlice({
         hikesDeleteSuccess(state, action: PayloadAction<IDeleteDestinationHike>) {
             state.isLoading = false
             state.error = action.payload.description ?? ""
+        },
+        hikesUpdated(state, action: PayloadAction<string[]>) {
+            state.isLoading = false
+            state.error = action.payload[0]
+            state.success = action.payload[1]
         },
         hikesDeleteError(state, action: PayloadAction<string>) {
             state.isLoading = false

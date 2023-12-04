@@ -53,10 +53,14 @@ export interface IHike {
     date_approve: string,
     date_start_hike: string,
     user_id: number,
-    description: number,
+    description: string,
     leader: string,
     destination_hikes: IDestinationHikes[],
     user: IUser,
+}
+
+export interface IUpdateHike {
+    description?: string
 }
 
 export interface IDeleteDestinationHike {

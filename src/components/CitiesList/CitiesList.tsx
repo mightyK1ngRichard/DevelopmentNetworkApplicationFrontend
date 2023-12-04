@@ -6,6 +6,8 @@ import CityItem from "../CityItem/CityItem.tsx";
 import './CitiesList.css'
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {fetchCities} from "../../store/reducers/ActionCreator.ts";
+import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
+import MyComponent from "../Popup/Popover.tsx";
 
 interface CitiesListProps {
     setPage: () => void
@@ -26,8 +28,8 @@ const CitiesList: FC<CitiesListProps> = ({setPage, searchValue}) => {
 
     return (
         <>
-            {isLoading && <h1> Загрузка данных .... </h1>}
-            {error != "" && <h1> {error} </h1>}
+            {isLoading && <LoadAnimation/>}
+            {error != "" && <MyComponent isError={true} message={error}/>}
             <List items={cities} renderItem={(city: ICity) =>
                 <CityItem
                     key={city.id}

@@ -11,7 +11,7 @@ import {
 import {citySlice} from "./CitySlice.ts"
 import {hikeSlice} from "./HikeSlice.ts";
 
-const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDE3MTUzNDQsImlhdCI6MTcwMTcxMTc0NCwiaXNzIjoiYml0b3AtYWRtaW4iLCJ1c2VyX2lkIjoxMywiUm9sZSI6MH0.nMGYm4iW4ioZ9IwDozjovXBl1cy8oYr_FMTV-tXAfV8`;
+const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDE3MjU3NjMsImlhdCI6MTcwMTcyMjE2MywiaXNzIjoiYml0b3AtYWRtaW4iLCJ1c2VyX2lkIjoxMywiUm9sZSI6MH0.CKmeDnkt8lPRO8FG7NwOOiLDIhVMh0Qxt9WfTV1TKH0`;
 
 export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatch) => {
     try {
@@ -19,8 +19,10 @@ export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatc
         const response = await axios.get<ICityWithBasket>('/api/v3/cities' + `?search=${searchValue ?? ''}`)
         dispatch(citySlice.actions.citiesFetched(response.data.cities))
     } catch (e) {
-        console.log(`Ошибка загрузки городов: ${e}`)
-        dispatch(citySlice.actions.citiesFetched(filterMockData(searchValue)))
+        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}\nПодождите 6 секунд`))
+        setTimeout(() => {
+            dispatch(citySlice.actions.citiesFetched(filterMockData(searchValue)))
+        }, 6000);
     }
 }
 
@@ -61,6 +63,44 @@ export const deleteHikeById = (id: number) => async (dispatch: AppDispatch) => {
     }
 }
 
+export const updateHike = (
+    id: number,
+    description: string,
+    hikeName: string,
+    startDate: string,
+    endDate: string,
+    leader: string
+) => async (dispatch: AppDispatch) => {
+    const config = {
+        method: "put",
+        url: "/api/v3/hikes",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            ContentType: "application/json"
+        },
+        data: {
+            description: description,
+            hike_name: hikeName,
+            date_start_hike: convertInputFormatToServerDate(startDate),
+            date_end: convertInputFormatToServerDate(endDate),
+            leader: leader,
+            id: id,
+        }
+    };
+
+    try {
+        const response = await axios(config);
+        const errorText = response.data.description ?? ""
+        const successText = errorText || "Успешно обновленно"
+        dispatch(hikeSlice.actions.hikesUpdated([errorText, successText]));
+        setTimeout(() => {
+            dispatch(hikeSlice.actions.hikesUpdated(['', '']));
+        }, 5000);
+    } catch (e) {
+        dispatch(hikeSlice.actions.hikesFetchedError(`${e}`));
+    }
+}
+
 export const fetchCity = (
     cityId: string,
     setPage: (name: string, id: number) => void
@@ -81,6 +121,7 @@ export const fetchCity = (
 }
 
 // MARK: - Mock data
+
 function filterMockData(searchValue?: string) {
     if (searchValue) {
         const filteredCities = mockCities.filter(city =>
@@ -120,3 +161,14 @@ export const convertServerDateToInputFormat = (serverDate: string) => {
 
     return `${year}-${month}-${day}`;
 };
+
+function convertInputFormatToServerDate(dateString: string): string {
+    const dateRegex = /^4-2-2T2:2:2Z2:2/;
+    if (dateRegex.test(dateString)) {
+        return dateString;
+    } else {
+        const date = new Date(dateString);
+        const isoDate = date.toISOString();
+        return isoDate;
+    }
+}
