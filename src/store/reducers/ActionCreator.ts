@@ -19,7 +19,7 @@ export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatc
         const response = await axios.get<ICityWithBasket>('/api/v3/cities' + `?search=${searchValue ?? ''}`)
         dispatch(citySlice.actions.citiesFetched(response.data.cities))
     } catch (e) {
-        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}\nПодождите 6 секунд`))
+        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}`))
         dispatch(citySlice.actions.citiesFetched(filterMockData(searchValue)))
     }
 }
