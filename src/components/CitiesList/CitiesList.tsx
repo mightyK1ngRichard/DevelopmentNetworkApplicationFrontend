@@ -27,7 +27,7 @@ const CitiesList: FC<CitiesListProps> = ({setPage, searchValue}) => {
     return (
         <>
             {isLoading && <h1> Загрузка данных .... </h1>}
-            {error == "" && <h1> {error} </h1>}
+            {error != "" && <h1> {error} </h1>}
             <List items={cities} renderItem={(city: ICity) =>
                 <CityItem
                     key={city.id}

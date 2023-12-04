@@ -6,7 +6,6 @@ interface CityState {
     city: ICity | null,
     isLoading: boolean;
     error: string;
-    count: number
 }
 
 const initialState: CityState = {
@@ -14,16 +13,12 @@ const initialState: CityState = {
     city: null,
     isLoading: false,
     error: '',
-    count: 0
 }
 
 export const citySlice = createSlice({
     name: 'city',
     initialState,
     reducers: {
-        increase(state, action: PayloadAction<number>) {
-            state.count += action.payload;
-        },
         citiesFetching(state) {
             state.isLoading = true
             state.error = ''

@@ -1,8 +1,10 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import cityReducer from "./reducers/CitySlice.ts"
+import hikeReducer from "./reducers/HikeSlice.ts"
 
 const rootReducer = combineReducers({
-    cityReducer
+    cityReducer,
+    hikeReducer
 })
 
 export const setupStore = () => {
