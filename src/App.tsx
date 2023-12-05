@@ -5,6 +5,7 @@ import CityDetail from "./components/CityDetail/CityDetail.tsx";
 import {useState} from "react";
 import BreadCrumbs, {IBreadCrumb} from "./components/BreadCrumbs/BreadCrumbs.tsx";
 import RequestView from "./components/RequestView/RequestView.tsx";
+import LoginPage from "./components/LoginPage/LoginPage.tsx";
 
 function App() {
     const citiesPage = {name: 'Города', to: 'cities'};
@@ -39,6 +40,11 @@ function App() {
                                <RequestView
                                    setPage={() => addPage([requestPage])}
                                />
+                           }
+                    />
+                    <Route path="/login"
+                           element={
+                               <LoginPage/>
                            }
                     />
                     <Route path="/cities/:id" element={

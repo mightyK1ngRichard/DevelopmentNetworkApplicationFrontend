@@ -5,12 +5,14 @@ import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {
     convertServerDateToInputFormat,
     emptyString,
-    fetchHikes, makeHike,
+    fetchHikes,
+    makeHike,
     updateHike
 } from "../../store/reducers/ActionCreator.ts";
 import {IHike} from "../../models/models.ts";
 import MyComponent from "../Popup/Popover.tsx";
 import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
+import {Link} from "react-router-dom";
 
 interface RequestViewProps {
     setPage: () => void;
@@ -19,6 +21,7 @@ interface RequestViewProps {
 const RequestView: FC<RequestViewProps> = ({setPage}) => {
     const dispatch = useAppDispatch();
     const {hike, isLoading, error, success} = useAppSelector(state => state.hikeReducer);
+    const {isAuth} = useAppSelector(state => state.userReducer);
     const [startHikeDate, setStartHikeDate] = useState('');
     const [endHikeDate, setEndHikeDate] = useState('');
     const [leader, setLeader] = useState('$');
@@ -45,6 +48,12 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                 leader == '$' ? hike.leader : leader
             )
         )
+    }
+
+    if (!isAuth) {
+        return <Link to="/login" className="btn btn-outline-danger">
+            Требуется войти в систему
+        </Link>
     }
 
     return (
@@ -140,7 +149,7 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                                     onClick={handleMakeRequest}
                                     style={{width: '150px', marginTop: '25px', marginRight: '80px'}}
                                 >
-                                    Сохранить
+                                    Сформировать
                                 </button>
                             </div>
                         }

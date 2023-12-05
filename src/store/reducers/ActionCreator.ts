@@ -1,6 +1,7 @@
 import {AppDispatch} from "../store.ts";
 import axios from "axios";
 import {
+    IAuthResponse,
     ICityResponse,
     ICityWithBasket,
     IDeleteDestinationHike,
@@ -8,12 +9,15 @@ import {
     IRequest,
     mockCities
 } from "../../models/models.ts";
+import Cookies from 'js-cookie';
 import {citySlice} from "./CitySlice.ts"
 import {hikeSlice} from "./HikeSlice.ts";
+import {userSlice} from "./UserSlice.ts";
 
-const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDE3MzU2NDYsImlhdCI6MTcwMTczMjA0NiwiaXNzIjoiYml0b3AtYWRtaW4iLCJ1c2VyX2lkIjoxMywiUm9sZSI6MH0.H4qbFhjuAOimD3mxR7I6V0Rxnom9QBvrW2Fh0U2hruQ`;
 
 export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken')
+    dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
     try {
         dispatch(citySlice.actions.citiesFetching())
         const response = await axios.get<ICityWithBasket>('/api/v3/cities' + `?search=${searchValue ?? ''}`)
@@ -25,6 +29,7 @@ export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatc
 }
 
 export const addCityIntoHike = (cityId: number, serialNumber: number, cityName: string) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
     const config = {
         method: "post",
         url: "/api/v3/cities/add-city-into-hike",
@@ -52,6 +57,8 @@ export const addCityIntoHike = (cityId: number, serialNumber: number, cityName: 
 }
 
 export const makeHike = () => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
+
     const config = {
         method: "put",
         url: "/api/v3/hikes/update/status-for-user",
@@ -79,8 +86,9 @@ export const makeHike = () => async (dispatch: AppDispatch) => {
     }
 }
 
-
 export const fetchHikes = () => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
+    dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
     try {
         dispatch(hikeSlice.actions.hikesFetching())
         const response = await axios.get<IHikeResponse>(`/api/v3/hikes`, {
@@ -101,6 +109,8 @@ export const fetchHikes = () => async (dispatch: AppDispatch) => {
 }
 
 export const deleteHikeById = (id: number) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
+
     try {
         dispatch(hikeSlice.actions.hikesFetching())
         const response = await axios.delete<IDeleteDestinationHike>(`/api/v3/destination-hikes`, {
@@ -126,6 +136,7 @@ export const updateHike = (
     endDate: string,
     leader: string
 ) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
     const config = {
         method: "put",
         url: "/api/v3/hikes",
@@ -172,6 +183,38 @@ export const fetchCity = (
         const mockCity = mockCities[previewID]
         setPage(mockCity.city_name ?? "Без названия", mockCity.id)
         dispatch(citySlice.actions.cityFetched(mockCity))
+    }
+}
+
+export const loginSession = (login: string, password: string) => async (dispatch: AppDispatch) => {
+    const config = {
+        method: "post",
+        url: "/api/v3/users/login",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: {
+            login: login,
+            password: password,
+        }
+    };
+
+    try {
+        dispatch(userSlice.actions.startProcess())
+        const response = await axios<IAuthResponse>(config);
+        const errorText = response.data.description ?? ""
+        const successText = errorText || "Авторизация прошла успешна"
+        dispatch(userSlice.actions.setStatuses([errorText, successText]));
+        const jwtToken = response.data.access_token
+        if (jwtToken) {
+            Cookies.set('jwtToken', jwtToken);
+            dispatch(userSlice.actions.setAuthStatus(true));
+        }
+        setTimeout(() => {
+            dispatch(userSlice.actions.resetStatuses());
+        }, 6000);
+    } catch (e) {
+        dispatch(userSlice.actions.setError(`${e}`));
     }
 }
 
