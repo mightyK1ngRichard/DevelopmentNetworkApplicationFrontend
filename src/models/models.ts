@@ -35,6 +35,17 @@ export interface IDestinationHikes {
     city: ICity,
 }
 
+export interface IRegisterResponse {
+    login: string
+    password: string
+}
+
+export interface IAuthResponse {
+    access_token?: string,
+    description?: string,
+    status?: string,
+}
+
 export interface IUser {
     id: number,
     user_name: string,
@@ -42,6 +53,7 @@ export interface IUser {
     login: string,
     birthday: string,
     image_url: string,
+    password: string,
 }
 
 export interface IHike {

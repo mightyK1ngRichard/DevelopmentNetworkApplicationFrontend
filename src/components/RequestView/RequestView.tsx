@@ -3,14 +3,16 @@ import {FC, useEffect, useState} from "react";
 import TableView from "../TableView/TableView.tsx";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {
-    convertServerDateToInputFormat,
+    convertServerDateToInputFormat, deleteHike,
     emptyString,
-    fetchHikes, makeHike,
+    fetchHikes,
+    makeHike,
     updateHike
 } from "../../store/reducers/ActionCreator.ts";
 import {IHike} from "../../models/models.ts";
 import MyComponent from "../Popup/Popover.tsx";
 import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
+import {Link} from "react-router-dom";
 
 interface RequestViewProps {
     setPage: () => void;
@@ -19,6 +21,7 @@ interface RequestViewProps {
 const RequestView: FC<RequestViewProps> = ({setPage}) => {
     const dispatch = useAppDispatch();
     const {hike, isLoading, error, success} = useAppSelector(state => state.hikeReducer);
+    const {isAuth} = useAppSelector(state => state.userReducer);
     const [startHikeDate, setStartHikeDate] = useState('');
     const [endHikeDate, setEndHikeDate] = useState('');
     const [leader, setLeader] = useState('$');
@@ -29,6 +32,10 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
         setPage();
         dispatch(fetchHikes());
     }, []);
+
+    const handleDeleteHike = (id: number) => {
+        dispatch(deleteHike(id))
+    }
 
     const handleMakeRequest = () => {
         dispatch(makeHike())
@@ -45,6 +52,12 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                 leader == '$' ? hike.leader : leader
             )
         )
+    }
+
+    if (!isAuth) {
+        return <Link to="/login" className="btn btn-outline-danger">
+            Требуется войти в систему
+        </Link>
     }
 
     return (
@@ -132,17 +145,28 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                         </div>
                         <TableView destHikes={singleHike.destination_hikes} status={singleHike.status_id}/>
                         {
-                            singleHike.status_id != 2 &&
-                            <div style={{textAlign: 'right'}}>
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-light"
-                                    onClick={handleMakeRequest}
-                                    style={{width: '150px', marginTop: '25px', marginRight: '80px'}}
-                                >
-                                    Сохранить
-                                </button>
-                            </div>
+                            singleHike.status_id != 2 && (
+                                <div className='delete-make'>
+                                    <div style={{textAlign: 'left', flex: 1}}>
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-danger"
+                                            onClick={() => handleDeleteHike(singleHike.id)}
+                                        >
+                                            Удалить
+                                        </button>
+                                    </div>
+                                    <div style={{textAlign: 'right', flex: 1}}>
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-light"
+                                            onClick={handleMakeRequest}
+                                        >
+                                            Сформировать
+                                        </button>
+                                    </div>
+                                </div>
+                            )
                         }
                     </div>
                 ))}
