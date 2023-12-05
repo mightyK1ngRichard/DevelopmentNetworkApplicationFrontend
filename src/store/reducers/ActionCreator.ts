@@ -244,6 +244,38 @@ export const registerSession = (userName: string, login: string, password: strin
     }
 }
 
+export const logoutSession = () => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
+
+    const config = {
+        method: "get",
+        url: "/api/v3/users/logout",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        }
+    };
+
+    try {
+        dispatch(userSlice.actions.startProcess())
+        const response = await axios(config);
+        const errorText = response.data.login == '' ? 'Ошибка регистрации' : ''
+        const successText = errorText || "Прощайте :("
+        dispatch(userSlice.actions.setStatuses([errorText, successText]))
+
+        if (errorText == '') {
+            Cookies.remove('jwtToken');
+            dispatch(userSlice.actions.setAuthStatus(false))
+        }
+        setTimeout(() => {
+            dispatch(userSlice.actions.resetStatuses());
+        }, 6000)
+    } catch (e) {
+        dispatch(userSlice.actions.setError(`${e}`));
+    }
+}
+
+
 export const loginSession = (login: string, password: string) => async (dispatch: AppDispatch) => {
     const config = {
         method: "post",

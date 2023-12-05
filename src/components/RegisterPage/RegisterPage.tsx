@@ -2,8 +2,6 @@ import {FC, useState} from 'react';
 import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 import {registerSession} from '../../store/reducers/ActionCreator.ts';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
-import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
-import MyComponent from "../Popup/Popover.tsx";
 import {Link} from "react-router-dom";
 
 interface RegisterPageProps {
@@ -15,7 +13,7 @@ const RegisterPage: FC<RegisterPageProps> = () => {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const {isLoading, success, error, isAuth} = useAppSelector(state => state.userReducer)
+    const {success, isAuth} = useAppSelector(state => state.userReducer)
 
     const handleRegister = () => {
         if (!username || !login || !password || !confirmPassword) {
@@ -46,9 +44,6 @@ const RegisterPage: FC<RegisterPageProps> = () => {
 
     return (
         <>
-            {isLoading && <LoadAnimation/>}
-            {error != "" && <MyComponent isError={true} message={error}/>}
-            {success != "" && <MyComponent isError={false} message={success}/>}
             <Container>
                 <Row className="justify-content-center">
                     <Col md={5}>

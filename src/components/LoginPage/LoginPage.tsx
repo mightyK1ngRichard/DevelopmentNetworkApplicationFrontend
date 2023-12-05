@@ -2,8 +2,6 @@ import {FC, useState} from 'react';
 import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {loginSession} from "../../store/reducers/ActionCreator.ts";
-import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
-import MyComponent from "../Popup/Popover.tsx";
 import {Link} from 'react-router-dom';
 
 interface LoginPageProps {
@@ -12,7 +10,7 @@ interface LoginPageProps {
 
 const LoginPage: FC<LoginPageProps> = () => {
     const dispatch = useAppDispatch()
-    const {isLoading, success, error, isAuth} = useAppSelector(state => state.userReducer)
+    const {error, isAuth} = useAppSelector(state => state.userReducer)
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
 
@@ -32,9 +30,6 @@ const LoginPage: FC<LoginPageProps> = () => {
 
     return (
         <>
-            {isLoading && <LoadAnimation/>}
-            {error != "" && <MyComponent isError={true} message={error}/>}
-            {success != "" && <MyComponent isError={false} message={success}/>}
             <Container>
                 <label className="link-danger text-wrong-password">
                     {error}
