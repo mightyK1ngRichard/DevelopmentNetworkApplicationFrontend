@@ -3,7 +3,7 @@ import {FC, useEffect, useState} from "react";
 import TableView from "../TableView/TableView.tsx";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {
-    convertServerDateToInputFormat,
+    convertServerDateToInputFormat, deleteHike,
     emptyString,
     fetchHikes,
     makeHike,
@@ -32,6 +32,10 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
         setPage();
         dispatch(fetchHikes());
     }, []);
+
+    const handleDeleteHike = (id: number) => {
+        dispatch(deleteHike(id))
+    }
 
     const handleMakeRequest = () => {
         dispatch(makeHike())
@@ -141,17 +145,28 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                         </div>
                         <TableView destHikes={singleHike.destination_hikes} status={singleHike.status_id}/>
                         {
-                            singleHike.status_id != 2 &&
-                            <div style={{textAlign: 'right'}}>
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-light"
-                                    onClick={handleMakeRequest}
-                                    style={{width: '150px', marginTop: '25px', marginRight: '80px'}}
-                                >
-                                    Сформировать
-                                </button>
-                            </div>
+                            singleHike.status_id != 2 && (
+                                <div className='delete-make'>
+                                    <div style={{textAlign: 'left', flex: 1}}>
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-danger"
+                                            onClick={() => handleDeleteHike(singleHike.id)}
+                                        >
+                                            Удалить
+                                        </button>
+                                    </div>
+                                    <div style={{textAlign: 'right', flex: 1}}>
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-light"
+                                            onClick={handleMakeRequest}
+                                        >
+                                            Сформировать
+                                        </button>
+                                    </div>
+                                </div>
+                            )
                         }
                     </div>
                 ))}

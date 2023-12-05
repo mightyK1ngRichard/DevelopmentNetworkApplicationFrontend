@@ -35,6 +35,11 @@ export interface IDestinationHikes {
     city: ICity,
 }
 
+export interface IRegisterResponse {
+    login: string
+    password: string
+}
+
 export interface IAuthResponse {
     access_token?: string,
     description?: string,

@@ -61,6 +61,15 @@ body {
     margin-right: 20px;
 }
 
+.delete-make {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    margin-top: 50px;
+    margin-right: 80px;
+    margin-left: 80px;
+}
+
 .dates-info {
     border: 1px solid #bdc3c7;
     padding: 15px;

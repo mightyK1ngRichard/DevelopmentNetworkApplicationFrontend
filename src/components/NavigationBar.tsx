@@ -66,13 +66,22 @@ const NavigationBar: FC<NavigationBarProps> = ({ handleSearchValue }) => {
                             </Nav.Item>
                         </Nav>
                     ) : (
-                        <Nav className="ms-2">
-                            <Nav.Item>
-                                <Link to="/login" className="btn btn-outline-light">
-                                    Войти
-                                </Link>
-                            </Nav.Item>
-                        </Nav>
+                        <>
+                            <Nav className="ms-2">
+                                <Nav.Item>
+                                    <Link to="/login" className="btn btn-outline-light">
+                                        Войти
+                                    </Link>
+                                </Nav.Item>
+                            </Nav>
+                            <Nav className="ms-2">
+                                <Nav.Item>
+                                    <Link to="/register" className="btn btn-outline-primary">
+                                        Регистрация
+                                    </Link>
+                                </Nav.Item>
+                            </Nav>
+                        </>
                     )}
                 </Navbar.Collapse>
             </div>

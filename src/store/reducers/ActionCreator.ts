@@ -5,7 +5,7 @@ import {
     ICityResponse,
     ICityWithBasket,
     IDeleteDestinationHike,
-    IHikeResponse,
+    IHikeResponse, IRegisterResponse,
     IRequest,
     mockCities
 } from "../../models/models.ts";
@@ -53,6 +53,36 @@ export const addCityIntoHike = (cityId: number, serialNumber: number, cityName: 
         }, 6000);
     } catch (e) {
         dispatch(citySlice.actions.citiesFetchedError(`${e}`))
+    }
+}
+
+export const deleteHike = (id: number) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
+
+    const config = {
+        method: "delete",
+        url: "/api/v3/hikes",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+            id: id
+        }
+    }
+    try {
+        dispatch(hikeSlice.actions.hikesFetching())
+        const response = await axios(config);
+        const errorText = response.data.description ?? ""
+        const successText = errorText || `Заявка удалена`
+        dispatch(hikeSlice.actions.hikesUpdated([errorText, successText]));
+        if (successText != "") {
+            dispatch(fetchHikes())
+        }
+        setTimeout(() => {
+            dispatch(hikeSlice.actions.hikesUpdated(['', '']));
+        }, 6000);
+    } catch (e) {
+        dispatch(hikeSlice.actions.hikesDeleteError(`${e}`))
     }
 }
 
@@ -183,6 +213,34 @@ export const fetchCity = (
         const mockCity = mockCities[previewID]
         setPage(mockCity.city_name ?? "Без названия", mockCity.id)
         dispatch(citySlice.actions.cityFetched(mockCity))
+    }
+}
+
+export const registerSession = (userName: string, login: string, password: string) => async (dispatch: AppDispatch) => {
+    const config = {
+        method: "post",
+        url: "/api/v3/users/sign_up",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: {
+            'user_name': userName,
+            login: login,
+            password: password,
+        }
+    };
+
+    try {
+        dispatch(userSlice.actions.startProcess())
+        const response = await axios<IRegisterResponse>(config);
+        const errorText = response.data.login == '' ? 'Ошибка регистрации' : ''
+        const successText = errorText || "Регистрация прошла успешно"
+        dispatch(userSlice.actions.setStatuses([errorText, successText]))
+        setTimeout(() => {
+            dispatch(userSlice.actions.resetStatuses());
+        }, 6000)
+    } catch (e) {
+        dispatch(userSlice.actions.setError(`${e}`));
     }
 }
 
