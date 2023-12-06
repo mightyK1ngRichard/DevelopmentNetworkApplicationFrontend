@@ -9,6 +9,7 @@ import {
 import TableView from '../TableView/TableView.tsx';
 import {IHike} from '../../models/models.ts';
 import {useAppDispatch} from "../../hooks/redux.ts";
+import Cookies from "js-cookie";
 
 interface HikeCardProps {
     singleHike: IHike
@@ -21,6 +22,7 @@ const HikeCard: FC<HikeCardProps> = ({singleHike}) => {
     const [leader, setLeader] = useState('$');
     const [description, setDescription] = useState('$');
     const [hikeName, setHikeName] = useState('$');
+    const role = Cookies.get('role')
 
     const handleDeleteHike = (id: number) => {
         dispatch(deleteHike(id))
@@ -143,7 +145,7 @@ const HikeCard: FC<HikeCardProps> = ({singleHike}) => {
                         </div>
                     )}
 
-                    {singleHike.status_id == 1 && (
+                    {singleHike.status_id == 1 && role == '2' && (
                         <div style={{ flex: 1 }}>
                             <button
                                 type="button"
@@ -155,7 +157,7 @@ const HikeCard: FC<HikeCardProps> = ({singleHike}) => {
                         </div>
                     )}
 
-                    {singleHike.status_id == 2 && (
+                    {singleHike.status_id == 2 && role == '2' && (
                         <>
                             <div style={{ flex: 1 }}>
                                 <button

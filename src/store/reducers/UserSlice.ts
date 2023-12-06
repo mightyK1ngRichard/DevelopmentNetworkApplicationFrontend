@@ -7,6 +7,7 @@ interface UserState {
     error: string
     success: string
     isAuth: boolean
+    role: string
 }
 
 const initialState: UserState = {
@@ -14,7 +15,8 @@ const initialState: UserState = {
     isLoading: false,
     isAuth: false,
     error: '',
-    success: ''
+    success: '',
+    role: ''
 }
 
 export const userSlice = createSlice({
@@ -27,6 +29,9 @@ export const userSlice = createSlice({
         },
         setAuthStatus(state, action: PayloadAction<boolean>) {
             state.isAuth = action.payload
+        },
+        setRole(state, action: PayloadAction<string>) {
+            state.role = action.payload
         },
         setStatuses(state, action: PayloadAction<string[]>) {
             state.isLoading = false

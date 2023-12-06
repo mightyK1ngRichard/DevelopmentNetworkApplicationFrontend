@@ -6,9 +6,10 @@ import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import React, {FC} from 'react';
 import {useAppDispatch, useAppSelector} from "../hooks/redux.ts";
-import {logoutSession} from "../store/reducers/ActionCreator.ts";
 import LoadAnimation from "./Popup/MyLoaderComponent.tsx";
 import MyComponent from "./Popup/Popover.tsx";
+import Cookies from "js-cookie";
+import {userSlice} from "../store/reducers/UserSlice.ts";
 
 interface NavigationBarProps {
     handleSearchValue: (value: string) => void;
@@ -17,7 +18,8 @@ interface NavigationBarProps {
 const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
     const dispatch = useAppDispatch()
     const {isLoading, success, error, isAuth} = useAppSelector(state => state.userReducer)
-
+    const role = Cookies.get('role')
+    
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const inputValue = (e.currentTarget.elements.namedItem('search') as HTMLInputElement)?.value;
@@ -25,7 +27,9 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
     };
 
     const handleLogout = () => {
-        dispatch(logoutSession())
+        Cookies.remove('jwtToken');
+        dispatch(userSlice.actions.setAuthStatus(false))
+        // dispatch(logoutSession())
     };
 
     return (
@@ -39,11 +43,13 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
+                            {role == '2' &&
                             <Nav.Item>
                                 <Link to="/cities/admin" className="nav-link ps-0">
                                     Админка городов
                                 </Link>
                             </Nav.Item>
+                            }
                             <Nav.Item>
                                 <Link to="/cities" className="nav-link ps-0">
                                     Города

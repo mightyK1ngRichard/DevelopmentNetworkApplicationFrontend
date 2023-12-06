@@ -8,6 +8,7 @@ import RequestView from "./components/RequestView/RequestView.tsx";
 import LoginPage from "./components/LoginPage/LoginPage.tsx";
 import RegisterPage from "./components/RegisterPage/RegisterPage.tsx";
 import CityTable from "./components/CityTable/CityTable.tsx";
+import CreateCityPage from "./components/TableView/AddCity.tsx";
 
 function App() {
     const citiesPage = {name: 'Города', to: 'cities'};
@@ -42,6 +43,12 @@ function App() {
                                <RequestView
                                    setPage={() => addPage([requestPage])}
                                />
+                           }
+                    />
+
+                    <Route path="/add-city"
+                           element={
+                               <CreateCityPage/>
                            }
                     />
                     <Route path="/login"

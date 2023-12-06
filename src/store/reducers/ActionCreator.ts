@@ -372,6 +372,48 @@ export const fetchCity = (
     }
 }
 
+export const createCity = (
+    cityName?: string,
+    description?: string,
+    image?: File | null
+) => async (dispatch: AppDispatch) => {
+    const formData = new FormData();
+    if (cityName) {
+        formData.append('city_name', cityName);
+    }
+    if (description) {
+        formData.append('description', description);
+    }
+    if (image) {
+        formData.append('image_url', image);
+    }
+    formData.append('status_id', '1');
+    const accessToken = Cookies.get('jwtToken');
+
+    const config = {
+        method: "post",
+        url: "/api/v3/cities",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'multipart/form-data'
+        },
+        data: formData
+    };
+
+    try {
+        dispatch(citySlice.actions.citiesFetching())
+        const response = await axios(config);
+        const errorText = response.data.description || ''
+        const successText = errorText == '' ? "Город создан" : ''
+        dispatch(citySlice.actions.cityAddedIntoHike([errorText, successText]))
+        setTimeout(() => {
+            dispatch(citySlice.actions.cityAddedIntoHike(['', '']));
+        }, 6000)
+    } catch (e) {
+        dispatch(citySlice.actions.citiesFetchedError(`${e}`));
+    }
+}
+
 export const registerSession = (userName: string, login: string, password: string) => async (dispatch: AppDispatch) => {
     const config = {
         method: "post",
@@ -429,7 +471,6 @@ export const logoutSession = () => async (dispatch: AppDispatch) => {
     }
 }
 
-
 export const loginSession = (login: string, password: string) => async (dispatch: AppDispatch) => {
     const config = {
         method: "post",
@@ -450,8 +491,10 @@ export const loginSession = (login: string, password: string) => async (dispatch
         const successText = errorText || "Авторизация прошла успешна"
         dispatch(userSlice.actions.setStatuses([errorText, successText]));
         const jwtToken = response.data.access_token
+        dispatch(userSlice.actions.setRole(response.data.role ?? ''))
         if (jwtToken) {
             Cookies.set('jwtToken', jwtToken);
+            Cookies.set('role', response.data.role ?? '');
             dispatch(userSlice.actions.setAuthStatus(true));
         }
         setTimeout(() => {
