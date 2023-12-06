@@ -7,6 +7,7 @@ import BreadCrumbs, {IBreadCrumb} from "./components/BreadCrumbs/BreadCrumbs.tsx
 import RequestView from "./components/RequestView/RequestView.tsx";
 import LoginPage from "./components/LoginPage/LoginPage.tsx";
 import RegisterPage from "./components/RegisterPage/RegisterPage.tsx";
+import CityTable from "./components/CityTable/CityTable.tsx";
 
 function App() {
     const citiesPage = {name: 'Города', to: 'cities'};
@@ -46,6 +47,11 @@ function App() {
                     <Route path="/login"
                            element={
                                <LoginPage/>
+                           }
+                    />
+                    <Route path="/cities/admin"
+                           element={
+                               <CityTable/>
                            }
                     />
                     <Route path="/register"

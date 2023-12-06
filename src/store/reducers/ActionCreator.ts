@@ -3,7 +3,7 @@ import axios from "axios";
 import {
     IAuthResponse,
     ICityResponse,
-    ICityWithBasket,
+    ICityWithBasket, IDefaultResponse,
     IDeleteDestinationHike,
     IHikeResponse, IRegisterResponse,
     IRequest,
@@ -25,6 +25,95 @@ export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatc
     } catch (e) {
         dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}`))
         dispatch(citySlice.actions.citiesFetched(filterMockData(searchValue)))
+    }
+}
+
+export const updateCityInfo = (
+    id: number,
+    cityName: string,
+    description: string,
+    statusId: string
+) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken')
+    dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
+    const config = {
+        method: "put",
+        url: `/api/v3/cities`,
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+            id: id,
+            city_name: cityName,
+            description: description,
+            status_id: parseInt(statusId, 10) ?? 1,
+        },
+    }
+
+    try {
+        dispatch(citySlice.actions.citiesFetching())
+        const response = await axios<IDefaultResponse>(config);
+        const error = response.data.description ?? ""
+        const success = error == "" ? 'Данные обновленны' : ''
+        dispatch(citySlice.actions.cityAddedIntoHike([error, success]))
+        dispatch(fetchCities())
+    } catch (e) {
+        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}`))
+    }
+}
+
+export const updateCityImage = (cityId: number, file: File) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken')
+    dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('city_id', `${cityId}`);
+
+    const config = {
+        method: "put",
+        url: `/api/v3/cities/upload-image`,
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        data: formData,
+    }
+
+    try {
+        dispatch(citySlice.actions.citiesFetching())
+        const response = await axios<IDefaultResponse>(config);
+        const error = response.data.description ?? ""
+        const success = error == "" ? 'Фото обновленно' : ''
+        dispatch(citySlice.actions.cityAddedIntoHike([error, success]))
+        dispatch(fetchCities())
+    } catch (e) {
+        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}`))
+    }
+}
+
+export const deleteCity = (cityId: number) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken')
+    dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
+
+    const config = {
+        method: "delete",
+        url: `/api/v3/cities`,
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+            id: `${cityId}`
+        },
+    }
+
+    try {
+        dispatch(citySlice.actions.citiesFetching())
+        const response = await axios<IDefaultResponse>(config);
+        const error = response.data.description ?? ""
+        const success = error == "" ? 'Город удалён' : ''
+        dispatch(citySlice.actions.cityAddedIntoHike([error, success]))
+        dispatch(fetchCities())
+    } catch (e) {
+        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}`))
     }
 }
 
@@ -116,12 +205,79 @@ export const makeHike = () => async (dispatch: AppDispatch) => {
     }
 }
 
+export const moderatorUpdateStatus = (hikeId: number, status: number) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
+
+    const config = {
+        method: "put",
+        url: "/api/v3/hikes/update/status-for-moderator",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+            status_id: status,
+            hike_id: hikeId
+        }
+    }
+    try {
+        dispatch(hikeSlice.actions.hikesFetching())
+        const response = await axios(config);
+        const errorText = response.data.description ?? ""
+        const successText = errorText || `Ответ принят`
+        dispatch(hikeSlice.actions.hikesUpdated([errorText, successText]));
+        if (successText != "") {
+            dispatch(fetchHikes())
+        }
+        setTimeout(() => {
+            dispatch(hikeSlice.actions.hikesUpdated(['', '']));
+        }, 6000);
+    } catch (e) {
+        dispatch(hikeSlice.actions.hikesDeleteError(`${e}`))
+    }
+}
+
 export const fetchHikes = () => async (dispatch: AppDispatch) => {
     const accessToken = Cookies.get('jwtToken');
     dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
     try {
         dispatch(hikeSlice.actions.hikesFetching())
         const response = await axios.get<IHikeResponse>(`/api/v3/hikes`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+
+        const transformedResponse: IRequest = {
+            hikes: response.data.hikes,
+            status: response.data.status
+        };
+
+        dispatch(hikeSlice.actions.hikesFetched(transformedResponse))
+    } catch (e) {
+        dispatch(hikeSlice.actions.hikesFetchedError(`${e}`))
+    }
+}
+
+export const fetchHikesFilter = (dateStart?: string, dateEnd?: string, status?: string) => async (dispatch: AppDispatch) => {
+    const accessToken = Cookies.get('jwtToken');
+    dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
+    try {
+        dispatch(hikeSlice.actions.hikesFetching())
+        const queryParams: Record<string, string | undefined> = {};
+        if (dateStart) {
+            queryParams.start_date = dateStart;
+        }
+        if (dateEnd) {
+            queryParams.end_date = dateEnd;
+        }
+        if (status) {
+            queryParams.status_id = status;
+        }
+        const queryString = Object.keys(queryParams)
+            .map((key) => `${key}=${encodeURIComponent(queryParams[key]!)}`)
+            .join('&');
+        const urlWithParams = `/api/v3/hikes${queryString ? `?${queryString}` : ''}`;
+        const response = await axios.get<IHikeResponse>(urlWithParams, {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
@@ -255,14 +411,12 @@ export const logoutSession = () => async (dispatch: AppDispatch) => {
             'Content-Type': 'application/json'
         }
     };
-
     try {
         dispatch(userSlice.actions.startProcess())
         const response = await axios(config);
-        const errorText = response.data.login == '' ? 'Ошибка регистрации' : ''
+        const errorText = response.data.login == '' ? 'Ошибка разлогина' : ''
         const successText = errorText || "Прощайте :("
         dispatch(userSlice.actions.setStatuses([errorText, successText]))
-
         if (errorText == '') {
             Cookies.remove('jwtToken');
             dispatch(userSlice.actions.setAuthStatus(false))

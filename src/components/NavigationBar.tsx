@@ -40,6 +40,11 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <Nav.Item>
+                                <Link to="/cities/admin" className="nav-link ps-0">
+                                    Админка городов
+                                </Link>
+                            </Nav.Item>
+                            <Nav.Item>
                                 <Link to="/cities" className="nav-link ps-0">
                                     Города
                                 </Link>

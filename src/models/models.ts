@@ -73,7 +73,7 @@ export interface IHike {
     user: IUser,
 }
 
-export interface IUpdateHike {
+export interface IDefaultResponse {
     description?: string
 }
 
