@@ -1,8 +1,6 @@
-import {IUser} from "../../models/models.ts";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface UserState {
-    user: IUser | null
     isLoading: boolean
     error: string
     success: string
@@ -11,7 +9,6 @@ interface UserState {
 }
 
 const initialState: UserState = {
-    user: null,
     isLoading: false,
     isAuth: false,
     error: '',
@@ -25,7 +22,6 @@ export const userSlice = createSlice({
     reducers: {
         startProcess(state) {
             state.isLoading = true
-
         },
         setAuthStatus(state, action: PayloadAction<boolean>) {
             state.isAuth = action.payload

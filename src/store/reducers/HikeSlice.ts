@@ -1,8 +1,9 @@
-import {IDeleteDestinationHike, IRequest} from "../../models/models.ts";
+import {IDeleteDestinationHike, IHike, IRequest} from "../../models/models.ts";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
 interface HikeState {
     hike: IRequest | null;
+    singleHike: IHike | null,
     isLoading: boolean;
     error: string;
     success: string;
@@ -10,6 +11,7 @@ interface HikeState {
 
 const initialState: HikeState = {
     hike: null,
+    singleHike: null,
     isLoading: false,
     error: '',
     success: ''
@@ -26,6 +28,11 @@ export const hikeSlice = createSlice({
             state.isLoading = false
             state.error = ''
             state.hike = action.payload
+        },
+        hikeFetched(state, action: PayloadAction<IHike>) {
+            state.isLoading = false
+            state.error = ''
+            state.singleHike = action.payload
         },
         hikesDeleteSuccess(state, action: PayloadAction<IDeleteDestinationHike>) {
             state.isLoading = false

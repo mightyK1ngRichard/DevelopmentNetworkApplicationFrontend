@@ -30,7 +30,7 @@ const CityTable = () => {
                     </Link>
                 </Nav.Item>
             </Nav>
-            <Table striped bordered hover className='city-table'>
+            <Table striped bordered hover className='table table-dark table-sm'>
                 <tbody>
                 {cities.map(city => (
                     <tr key={city.id}>

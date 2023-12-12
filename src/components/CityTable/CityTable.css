@@ -1,4 +1,4 @@
-.city-table {
+.table {
     width: calc(100% - 160px);
     margin-left: 80px;
     margin-right: 80px;
@@ -7,5 +7,5 @@
     color: #fff;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 15px rgba(26, 2, 250, 0.44);
 }

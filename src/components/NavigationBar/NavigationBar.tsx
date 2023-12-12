@@ -5,11 +5,14 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import React, {FC} from 'react';
-import {useAppDispatch, useAppSelector} from "../hooks/redux.ts";
-import LoadAnimation from "./Popup/MyLoaderComponent.tsx";
-import MyComponent from "./Popup/Popover.tsx";
+import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
+import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
+import MyComponent from "../Popup/Popover.tsx";
 import Cookies from "js-cookie";
-import {userSlice} from "../store/reducers/UserSlice.ts";
+import {userSlice} from "../../store/reducers/UserSlice.ts";
+import {FormLabel} from "react-bootstrap";
+import './NavigationBar.css'
+import {defaultImage} from "../../models/models.ts";
 
 interface NavigationBarProps {
     handleSearchValue: (value: string) => void;
@@ -18,8 +21,10 @@ interface NavigationBarProps {
 const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
     const dispatch = useAppDispatch()
     const {isLoading, success, error, isAuth} = useAppSelector(state => state.userReducer)
+    const userImage = Cookies.get('userImage')
+    const userName = Cookies.get('userName')
     const role = Cookies.get('role')
-    
+
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const inputValue = (e.currentTarget.elements.namedItem('search') as HTMLInputElement)?.value;
@@ -44,11 +49,11 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             {role == '2' &&
-                            <Nav.Item>
-                                <Link to="/cities/admin" className="nav-link ps-0">
-                                    Админка городов
-                                </Link>
-                            </Nav.Item>
+                                <Nav.Item>
+                                    <Link to="/cities/admin" className="nav-link ps-0">
+                                        Админка городов
+                                    </Link>
+                                </Nav.Item>
                             }
                             <Nav.Item>
                                 <Link to="/cities" className="nav-link ps-0">
@@ -75,13 +80,27 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
                             </Button>
                         </Form>
                         {isAuth ? (
-                            <Nav className="ms-2">
-                                <Nav.Item>
-                                    <Button variant="outline-light" onClick={handleLogout}>
-                                        Выйти
-                                    </Button>
-                                </Nav.Item>
-                            </Nav>
+                            <>
+                                <Nav>
+                                    <Nav.Item className="mx-2">
+                                        <Button variant="outline-light" onClick={handleLogout}>
+                                            Выйти
+                                        </Button>
+                                    </Nav.Item>
+                                </Nav>
+                                <div className="avatar-container d-flex align-items-center">
+                                    <Nav.Item>
+                                        <img
+                                            src={userImage || defaultImage}
+                                            alt="User Avatar"
+                                            className="avatar me-2"
+                                        />
+                                    </Nav.Item>
+                                    <Nav.Item className="mx-2 mt-2">
+                                        <FormLabel>{userName || 'Не задано'}</FormLabel>
+                                    </Nav.Item>
+                                </div>
+                            </>
                         ) : (
                             <>
                                 <Nav className="ms-2">

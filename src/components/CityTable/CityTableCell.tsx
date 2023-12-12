@@ -59,8 +59,8 @@ const CityTableCell: FC<CityTableCellProps> = ({cityData}) => {
     return (
         <div>
             {isEditing ? (
-                <Form>
-                    <Form.Group as={Col} controlId="formCityName">
+                <Form className='mx-5'>
+                    <Form.Group as={Col} controlId="formCityName" className='mt-2'>
                         <Form.Label>Название города</Form.Label>
                         <Form.Control
                             type="text"
@@ -71,7 +71,7 @@ const CityTableCell: FC<CityTableCellProps> = ({cityData}) => {
                         />
                     </Form.Group>
 
-                    <Form.Group as={Col} controlId="formCityStatus">
+                    <Form.Group as={Col} controlId="formCityStatus" className='mt-2'>
                         <Form.Label>Статус</Form.Label>
                         <Form.Control
                             as="select"
@@ -84,7 +84,7 @@ const CityTableCell: FC<CityTableCellProps> = ({cityData}) => {
                         </Form.Control>
                     </Form.Group>
 
-                    <Form.Group controlId="formCityDescription">
+                    <Form.Group controlId="formCityDescription" className='mt-2'>
                         <Form.Label>Описание</Form.Label>
                         <Form.Control
                             as="textarea"
@@ -96,7 +96,7 @@ const CityTableCell: FC<CityTableCellProps> = ({cityData}) => {
                         />
                     </Form.Group>
 
-                    <Form.Group controlId="formCityImage">
+                    <Form.Group controlId="formCityImage" className='mt-2'>
                         <Form.Label>Картинка</Form.Label>
                         <Form.Control
                             type="file"
@@ -105,12 +105,20 @@ const CityTableCell: FC<CityTableCellProps> = ({cityData}) => {
                         />
                     </Form.Group>
 
-                    <Button variant="primary" onClick={handleSaveClick}>
-                        Сохранить изменения
-                    </Button>
+                    <div style={{display: 'flex', justifyContent: 'space-between'}} className='my-3'>
+                        <Button variant="primary" onClick={handleSaveClick}>
+                            Сохранить изменения
+                        </Button>
+
+                        <Button variant='outline-light' onClick={() => {
+                            setIsEditing(false)
+                        }}>
+                            Отменить редактирование
+                        </Button>
+                    </div>
                 </Form>
             ) : (
-                <>
+                <div className='mx-5'>
                     <div>
                         <p>Название города: {cityData.city_name}</p>
                         <p>Статус: {cityData.status.status_name}</p>
@@ -123,19 +131,19 @@ const CityTableCell: FC<CityTableCellProps> = ({cityData}) => {
                         }
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{display: 'flex', justifyContent: 'space-between'}} className='my-3'>
                         <Button variant="outline-warning" onClick={handleEditClick}>
                             Редактировать
                         </Button>
 
-                        <div style={{ margin: '0 20px' }}></div>
+                        <div style={{margin: '0 20px'}}></div>
 
                         <Button variant="outline-danger" onClick={handleDeleteClick}>
                             Удалить
                         </Button>
                     </div>
 
-                </>
+                </div>
             )}
         </div>
     );

@@ -1,0 +1,16 @@
+.avatar-container {
+    border-radius: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+    display: flex;
+    align-items: center;
+    border: 2px solid #d0d0d0; /* Example contrasting border color */
+
+}
+
+.avatar-container img {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border-radius: 20px;
+}

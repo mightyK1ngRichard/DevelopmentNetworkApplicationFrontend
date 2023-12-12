@@ -3,6 +3,7 @@ import {Button, Form, Container, Row, Col} from 'react-bootstrap';
 import {createCity} from "../../store/reducers/ActionCreator.ts";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import MyComponent from "../Popup/Popover.tsx";
+import Cookies from "js-cookie";
 
 interface CityData {
     cityName: string;
@@ -17,8 +18,7 @@ const CreateCityPage: React.FC = () => {
         image: null,
     });
     const {error, success} = useAppSelector(state => state.cityReducer)
-    const {role} = useAppSelector(state => state.userReducer)
-
+    const role = Cookies.get('role')
     const dispatch = useAppDispatch()
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;

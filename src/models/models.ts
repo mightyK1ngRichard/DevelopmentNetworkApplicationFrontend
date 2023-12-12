@@ -45,7 +45,14 @@ export interface IAuthResponse {
     description?: string,
     status?: string,
     role?: string
+    userName: string,
+    userImage: string
 }
+
+export interface UserInfo {
+    name: string,
+    image: string,
+};
 
 export interface IUser {
     id: number,
@@ -72,6 +79,7 @@ export interface IHike {
     leader: string,
     destination_hikes: IDestinationHikes[],
     user: IUser,
+    moderator: IUser,
 }
 
 export interface IDefaultResponse {
@@ -184,3 +192,5 @@ export const mockCities: ICity[] = [
         image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Venice_frozen_lagoon_1708.jpg/400px-Venice_frozen_lagoon_1708.jpg'
     },
 ]
+
+export const defaultImage: string = `https://w.forfun.com/fetch/15/156edf6b7f00b207e365081fd2cd8186.jpeg`

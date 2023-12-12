@@ -4,7 +4,7 @@ import {
     IAuthResponse,
     ICityResponse,
     ICityWithBasket, IDefaultResponse,
-    IDeleteDestinationHike,
+    IDeleteDestinationHike, IHike,
     IHikeResponse, IRegisterResponse,
     IRequest,
     mockCities
@@ -251,8 +251,32 @@ export const fetchHikes = () => async (dispatch: AppDispatch) => {
             hikes: response.data.hikes,
             status: response.data.status
         };
-
+        console.log(transformedResponse.hikes)
         dispatch(hikeSlice.actions.hikesFetched(transformedResponse))
+    } catch (e) {
+        dispatch(hikeSlice.actions.hikesFetchedError(`${e}`))
+    }
+}
+
+export const fetchHikeById = (
+    id: string,
+    setPage: (name: string, id: number) => void
+) => async (dispatch: AppDispatch) => {
+    interface ISingleHikeResponse {
+        hike: IHike,
+    }
+
+    const accessToken = Cookies.get('jwtToken');
+    dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
+    try {
+        dispatch(hikeSlice.actions.hikesFetching())
+        const response = await axios.get<ISingleHikeResponse>(`/api/v3/hikes/${id}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+        setPage(response.data.hike.hike_name, response.data.hike.id)
+        dispatch(hikeSlice.actions.hikeFetched(response.data.hike))
     } catch (e) {
         dispatch(hikeSlice.actions.hikesFetchedError(`${e}`))
     }
@@ -287,7 +311,7 @@ export const fetchHikesFilter = (dateStart?: string, dateEnd?: string, status?: 
             hikes: response.data.hikes,
             status: response.data.status
         };
-
+        // console.log(transformedResponse.hikes)
         dispatch(hikeSlice.actions.hikesFetched(transformedResponse))
     } catch (e) {
         dispatch(hikeSlice.actions.hikesFetchedError(`${e}`))
@@ -496,6 +520,8 @@ export const loginSession = (login: string, password: string) => async (dispatch
             Cookies.set('jwtToken', jwtToken);
             Cookies.set('role', response.data.role ?? '');
             dispatch(userSlice.actions.setAuthStatus(true));
+            Cookies.set('userImage', response.data.userImage)
+            Cookies.set('userName', response.data.userName)
         }
         setTimeout(() => {
             dispatch(userSlice.actions.resetStatuses());

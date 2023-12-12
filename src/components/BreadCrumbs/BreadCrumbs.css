@@ -1,23 +1,26 @@
-.breadcrumbs-container {
+#path-name {
+    color: white;
+}
+
+.breadcrumbs {
     display: flex;
-    align-items: baseline;
-    font-size: 16px;
-    padding: 0 9%;
+    list-style: none;
+    padding: 0;
+    font-size: 18px;
 }
 
-.separator {
-    display: flex;
-    align-items: center;
-    margin: 0 8px;
-    color: #3b3b3b;
+.breadcrumb-item {
+    margin-right: 10px;
+
+    text-decoration: none;
 }
 
-.breadcrumb {
-    color: #430087;
-    cursor: pointer;
+.breadcrumb-item:last-child {
+    font-weight: bold;
 }
 
-.breadcrumb:hover {
-    color: #ff00f3;
-    cursor: pointer;
+.breadcrumb-item:not(:last-child):after {
+    content: '>';
+    margin-left: 10px;
+    color: #777;
 }
