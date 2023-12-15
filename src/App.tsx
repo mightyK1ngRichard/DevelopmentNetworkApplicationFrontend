@@ -14,18 +14,14 @@ import HikeCard from "./components/RequestView/HikeCard.tsx";
 function App() {
     const citiesPage: Breadcrumb = {name: 'Города', to: 'cities'};
     const requestPage: Breadcrumb = {name: 'Заявки', to: 'request'};
-    const [searchValue, setSearchValue] = useState('')
     const [pages, setPage] = useState<Breadcrumb[]>([citiesPage])
     const addPage = (newPage: Breadcrumb[]) => {
         setPage(newPage);
     };
-    const resetSearchValue = () => {
-        setSearchValue('');
-    };
 
     return (
         <>
-            <NavigationBar handleSearchValue={(value) => setSearchValue(value)}/>
+            <NavigationBar/>
             <BreadCrumbs paths={pages}/>
             <>
                 <Routes>
@@ -33,8 +29,6 @@ function App() {
                     <Route path="/cities" element={
                         <CitiesList
                             setPage={() => addPage([citiesPage])}
-                            searchValue={searchValue}
-                            resetSearchValue={resetSearchValue}
                         />
                     }
                     />

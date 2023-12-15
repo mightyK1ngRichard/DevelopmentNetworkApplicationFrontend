@@ -11,26 +11,29 @@ import MyComponent from "../Popup/Popover.tsx";
 
 interface CitiesListProps {
     setPage: () => void
-    searchValue?: string
-    resetSearchValue: () => void;
 }
 
-const CitiesList: FC<CitiesListProps> = ({setPage, searchValue}) => {
+const CitiesList: FC<CitiesListProps> = ({setPage}) => {
     const dispatch = useAppDispatch()
     const {cities, isLoading, error, success} = useAppSelector(state => state.cityReducer)
     const navigate = useNavigate();
+    const {searchValue} = useAppSelector(state => state.progressReducer)
 
     useEffect(() => {
         setPage()
         dispatch(fetchCities(searchValue))
     }, [searchValue]);
 
+    if (!cities) {
+        return <h3>Данных нет</h3>
+    }
+
     return (
         <>
             {isLoading && <LoadAnimation/>}
             {error != "" && <MyComponent isError={true} message={error}/>}
             {success != "" && <MyComponent isError={false} message={success}/>}
-            <List items={cities} renderItem={(city: ICity) =>
+            <List items={cities ?? []} renderItem={(city: ICity) =>
                 <CityItem
                     key={city.id}
                     city={city}

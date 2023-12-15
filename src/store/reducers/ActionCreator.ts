@@ -318,7 +318,11 @@ export const fetchHikesFilter = (dateStart?: string, dateEnd?: string, status?: 
     }
 }
 
-export const deleteHikeById = (id: number) => async (dispatch: AppDispatch) => {
+export const deleteDestHikeById = (
+    id: number,
+    hike_id: string,
+    setPage: (name: string, id: number) => void
+) => async (dispatch: AppDispatch) => {
     const accessToken = Cookies.get('jwtToken');
 
     try {
@@ -332,7 +336,7 @@ export const deleteHikeById = (id: number) => async (dispatch: AppDispatch) => {
             },
         });
         dispatch(hikeSlice.actions.hikesDeleteSuccess(response.data))
-        dispatch(fetchHikes())
+        dispatch(fetchHikeById(hike_id, setPage))
     } catch (e) {
         dispatch(hikeSlice.actions.hikesFetchedError(`${e}`))
     }

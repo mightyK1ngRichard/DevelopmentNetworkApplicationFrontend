@@ -5,7 +5,6 @@ import {addCityIntoHike} from "../../store/reducers/ActionCreator.ts";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {citySlice} from "../../store/reducers/CitySlice.ts";
 
-
 interface CityItemProps {
     city: ICity;
     onClick: (num: number) => void,
@@ -16,6 +15,7 @@ const CityItem: FC<CityItemProps> = ({city, onClick, isServer}) => {
 
     const dispatch = useAppDispatch()
     const {increase} = citySlice.actions
+    const {isAuth} = useAppSelector(state => state.userReducer)
     const {serialNumber} = useAppSelector(state => state.cityReducer)
 
     const plusClickHandler = () => {
@@ -32,7 +32,7 @@ const CityItem: FC<CityItemProps> = ({city, onClick, isServer}) => {
                 onClick={() => onClick(city.id)}
                 id={`photo-${city.id}`}
             />
-            {isServer && (
+            {isServer && isAuth && (
                 <div className="circle" onClick={plusClickHandler}>
                     <img
                         src="/plus.png"

@@ -4,7 +4,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import React, {FC} from 'react';
+import React from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import LoadAnimation from "../Popup/MyLoaderComponent.tsx";
 import MyComponent from "../Popup/Popover.tsx";
@@ -13,14 +13,12 @@ import {userSlice} from "../../store/reducers/UserSlice.ts";
 import {FormLabel} from "react-bootstrap";
 import './NavigationBar.css'
 import {defaultImage} from "../../models/models.ts";
+import {progressSlice} from "../../store/reducers/ProgressData.ts";
 
-interface NavigationBarProps {
-    handleSearchValue: (value: string) => void;
-}
-
-const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
+const NavigationBar = () => {
     const dispatch = useAppDispatch()
     const {isLoading, success, error, isAuth} = useAppSelector(state => state.userReducer)
+    // const {setSearch} = progressSlice.actions
     const userImage = Cookies.get('userImage')
     const userName = Cookies.get('userName')
     const role = Cookies.get('role')
@@ -28,7 +26,7 @@ const NavigationBar: FC<NavigationBarProps> = ({handleSearchValue}) => {
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const inputValue = (e.currentTarget.elements.namedItem('search') as HTMLInputElement)?.value;
-        handleSearchValue(inputValue);
+        dispatch(progressSlice.actions.setSearch(inputValue))
     };
 
     const handleLogout = () => {

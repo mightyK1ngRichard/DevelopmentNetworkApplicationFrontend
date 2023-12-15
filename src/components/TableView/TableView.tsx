@@ -2,21 +2,23 @@ import {FC} from "react";
 import './TableView.css'
 import {IDestinationHikes} from "../../models/models.ts";
 import {useAppDispatch} from "../../hooks/redux.ts";
-import {deleteHikeById} from "../../store/reducers/ActionCreator.ts";
+import {deleteDestHikeById} from "../../store/reducers/ActionCreator.ts";
 import {citySlice} from "../../store/reducers/CitySlice.ts";
 
 interface TableViewProps {
     status: number
     destHikes: IDestinationHikes[]
+    setPage: (name: string, id: number) => void
+    hikeID: string
 }
 
-const TableView: FC<TableViewProps> = ({destHikes, status}) => {
+const TableView: FC<TableViewProps> = ({destHikes, status, setPage, hikeID}) => {
     const dispatch = useAppDispatch()
     const {minus} = citySlice.actions
 
     const handleDelete = (id: number) => {
         dispatch(minus())
-        dispatch(deleteHikeById(id))
+        dispatch(deleteDestHikeById(id, hikeID, setPage))
     }
 
     return (
