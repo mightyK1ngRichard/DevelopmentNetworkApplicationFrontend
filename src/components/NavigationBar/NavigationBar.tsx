@@ -18,10 +18,10 @@ import {progressSlice} from "../../store/reducers/ProgressData.ts";
 const NavigationBar = () => {
     const dispatch = useAppDispatch()
     const {isLoading, success, error, isAuth} = useAppSelector(state => state.userReducer)
-    // const {setSearch} = progressSlice.actions
     const userImage = Cookies.get('userImage')
     const userName = Cookies.get('userName')
     const role = Cookies.get('role')
+    const currentUrl = window.location.pathname.split('/').pop();
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -37,10 +37,8 @@ const NavigationBar = () => {
 
     return (
         <>
-            {isLoading && <LoadAnimation/>}
             {error != "" && <MyComponent isError={true} message={error}/>}
             {success != "" && <MyComponent isError={false} message={success}/>}
-
             <Navbar expand="sm" className="bg-black" data-bs-theme="dark">
                 <div className="container-xl px-2 px-sm-3">
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
@@ -49,7 +47,7 @@ const NavigationBar = () => {
                             {role == '2' &&
                                 <Nav.Item>
                                     <Link to="/cities/admin" className="nav-link ps-0">
-                                        Админка городов
+                                        Админка
                                     </Link>
                                 </Nav.Item>
                             }
@@ -64,19 +62,23 @@ const NavigationBar = () => {
                                 </Link>
                             </Nav.Item>
                         </Nav>
-                        <Form onSubmit={handleSearch} className="d-flex">
-                            <FormControl
-                                id={'search-text-field'}
-                                type="text"
-                                name="search"
-                                placeholder="Поиск городов"
-                                className="me-2"
-                                aria-label="Search"
-                            />
-                            <Button type="submit" variant="outline-light">
-                                Поиск
-                            </Button>
-                        </Form>
+                        {currentUrl == 'cities' &&
+                            <Form onSubmit={handleSearch} className="d-flex">
+                                <FormControl
+                                    id={'search-text-field'}
+                                    type="text"
+                                    name="search"
+                                    placeholder="Поиск городов"
+                                    className="me-2"
+                                    aria-label="Search"
+                                />
+
+                                <Button type="submit" variant="outline-light">
+                                    Поиск
+                                </Button>
+
+                            </Form>
+                        }
                         {isAuth ? (
                             <>
                                 <Nav>
@@ -120,6 +122,8 @@ const NavigationBar = () => {
                     </Navbar.Collapse>
                 </div>
             </Navbar>
+
+            {isLoading && <LoadAnimation/>}
         </>
     );
 };

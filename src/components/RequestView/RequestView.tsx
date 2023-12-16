@@ -56,7 +56,6 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
 
     const clickCell = (cellID: number) => {
         navigate(`/hikes/${cellID}`);
-        console.log(cellID)
     }
 
     if (!isAuth) {
@@ -139,7 +138,6 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                     </thead>
                     <tbody>
                     {hike.hikes.map((hike) => (
-                        // <Link to="/hikes/:hike_id" className="nav-link ps-0">
                         <tr key={hike.id} onClick={() => clickCell(hike.id)}>
                             <td>{hike.id}</td>
                             <td>{hike.hike_name || 'Не задано'}</td>
@@ -153,7 +151,6 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                             <td>{hike.status.status_name}</td>
                             <td>{hike.leader || 'На задан'}</td>
                         </tr>
-                        // </Link>
                     ))}
                     </tbody>
                 </Table>

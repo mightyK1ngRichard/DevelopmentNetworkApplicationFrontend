@@ -2,13 +2,14 @@ import {FC, useState} from 'react';
 import {Container, Row, Col, Form, Button} from 'react-bootstrap';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {loginSession} from "../../store/reducers/ActionCreator.ts";
-import {Link} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 interface LoginPageProps {
 
 }
 
 const LoginPage: FC<LoginPageProps> = () => {
+    const navigate = useNavigate();
     const dispatch = useAppDispatch()
     const {error, isAuth} = useAppSelector(state => state.userReducer)
     const [login, setLogin] = useState('');
@@ -23,9 +24,7 @@ const LoginPage: FC<LoginPageProps> = () => {
     };
 
     if (isAuth) {
-        return <Link to="/cities" className="btn btn-outline-danger">
-            Смотреть города
-        </Link>
+        navigate('/cities')
     }
 
     return (

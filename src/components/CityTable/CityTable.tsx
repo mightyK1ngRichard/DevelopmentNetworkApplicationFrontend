@@ -24,7 +24,7 @@ const CityTable = () => {
 
             <Nav className="ms-2">
                 <Nav.Item>
-                    <Link to="/add-city" className="btn btn-outline-primary"
+                    <Link to="/add-city" className="btn btn-outline-primary mt-2"
                           style={{marginLeft: '80px', marginBottom: '30px'}}>
                         Добавить город
                     </Link>

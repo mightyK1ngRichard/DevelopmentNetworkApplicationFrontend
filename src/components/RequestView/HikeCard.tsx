@@ -81,7 +81,7 @@ const HikeCard: FC<HikeCardProps> = ({setPage}) => {
             <div className='mx-5 mb-5'>
                 {
                     singleHike && <>
-                        {/* ======================= ШАПКА ============================= */}
+                        {/* ======================= ШАПКА =============================== */}
 
                         <div className="card">
                             <h3>Статус: {singleHike.status.status_name}</h3>

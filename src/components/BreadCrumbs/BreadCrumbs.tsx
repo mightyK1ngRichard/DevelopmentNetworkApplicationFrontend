@@ -15,18 +15,17 @@ const Breadcrumbs: FC<BreadcrumbsProps> = ({paths}) => {
 
     return (
         <div className={'mx-5 my-2'}>
-            <ul className="breadcrumbs">
+            <div className="breadcrumbs">
                 {paths.map((path, index) => (
-                    <li key={index} className="breadcrumb-item" id={'path-name'}>
+                    <div key={index} className="breadcrumb-item-2">
                         {index === paths.length - 1 ? (
                             path.name
                         ) : (
                             <Link to={path.to}>{path.name}</Link>
                         )}
-                        {index !== paths.length - 1 && <span> </span>}
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 };

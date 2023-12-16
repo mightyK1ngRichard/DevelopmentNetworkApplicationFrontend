@@ -8,6 +8,7 @@ interface CityState {
     error: string;
     success: string;
     serialNumber: number;
+    basketID: number;
 }
 
 const initialState: CityState = {
@@ -16,7 +17,8 @@ const initialState: CityState = {
     isLoading: false,
     error: '',
     success: '',
-    serialNumber: 0
+    serialNumber: 0,
+    basketID: 0
 }
 
 export const citySlice = createSlice({
@@ -37,9 +39,10 @@ export const citySlice = createSlice({
             state.error = ''
             state.success = ''
         },
-        citiesFetched(state, action: PayloadAction<ICity[]>) {
+        citiesFetched(state, action: PayloadAction<[ICity[], number]>) {
             state.isLoading = false
-            state.cities = action.payload
+            state.cities = action.payload[0]
+            state.basketID = action.payload[1]
         },
         citiesFetchedError(state, action: PayloadAction<string>) {
             state.isLoading = false

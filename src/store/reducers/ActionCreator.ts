@@ -18,13 +18,21 @@ import {userSlice} from "./UserSlice.ts";
 export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatch) => {
     const accessToken = Cookies.get('jwtToken')
     dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
+    const config = {
+        method: "get",
+        url: `/api/v3/cities`+ `?search=${searchValue ?? ''}`,
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        },
+    }
+
     try {
         dispatch(citySlice.actions.citiesFetching())
-        const response = await axios.get<ICityWithBasket>('/api/v3/cities' + `?search=${searchValue ?? ''}`)
-        dispatch(citySlice.actions.citiesFetched(response.data.cities))
+        const response = await axios<ICityWithBasket>(config);
+        dispatch(citySlice.actions.citiesFetched([response.data.cities, response.data.basket_id]))
     } catch (e) {
         dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}`))
-        dispatch(citySlice.actions.citiesFetched(filterMockData(searchValue)))
+        dispatch(citySlice.actions.citiesFetched([filterMockData(searchValue), 0]))
     }
 }
 
@@ -137,6 +145,7 @@ export const addCityIntoHike = (cityId: number, serialNumber: number, cityName: 
         const errorText = response.data.description ?? ""
         const successText = errorText || `Город "${cityName}" добавлен`
         dispatch(citySlice.actions.cityAddedIntoHike([errorText, successText]));
+        dispatch(fetchCities())
         setTimeout(() => {
             dispatch(citySlice.actions.cityAddedIntoHike(['', '']));
         }, 6000);
@@ -251,7 +260,6 @@ export const fetchHikes = () => async (dispatch: AppDispatch) => {
             hikes: response.data.hikes,
             status: response.data.status
         };
-        console.log(transformedResponse.hikes)
         dispatch(hikeSlice.actions.hikesFetched(transformedResponse))
     } catch (e) {
         dispatch(hikeSlice.actions.hikesFetchedError(`${e}`))
@@ -516,7 +524,7 @@ export const loginSession = (login: string, password: string) => async (dispatch
         dispatch(userSlice.actions.startProcess())
         const response = await axios<IAuthResponse>(config);
         const errorText = response.data.description ?? ""
-        const successText = errorText || "Авторизация прошла успешна"
+        const successText = errorText || "Добро пожаловать :)"
         dispatch(userSlice.actions.setStatuses([errorText, successText]));
         const jwtToken = response.data.access_token
         dispatch(userSlice.actions.setRole(response.data.role ?? ''))

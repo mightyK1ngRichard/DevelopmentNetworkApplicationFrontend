@@ -53,7 +53,7 @@ function App() {
                     <Route path="/cities/:id" element={
                         <CityDetail
                             setPage={(name, id) => addPage([
-                                citiesPage, {name: `Город-${name}`, to: `cities/${id}`}
+                                citiesPage, {name: `${name}`, to: `cities/${id}`}
                             ])}
                         />}
                     />
