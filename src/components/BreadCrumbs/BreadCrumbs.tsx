@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom';
 import {FC} from "react";
-import './Breadcrumbs.css'
+import './breadcrumbs.css'
 
 export interface BreadcrumbsProps {
     paths: Breadcrumb[]
