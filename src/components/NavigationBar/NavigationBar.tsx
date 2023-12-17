@@ -17,10 +17,11 @@ import {progressSlice} from "../../store/reducers/ProgressData.ts";
 
 const NavigationBar = () => {
     const dispatch = useAppDispatch()
-    const {isLoading, success, error, isAuth} = useAppSelector(state => state.userReducer)
+    const {isLoading, success, error} = useAppSelector(state => state.userReducer)
     const userImage = Cookies.get('userImage')
     const userName = Cookies.get('userName')
     const role = Cookies.get('role')
+    const jwtToken = Cookies.get('jwtToken')
     const currentUrl = window.location.pathname.split('/').pop();
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -30,7 +31,11 @@ const NavigationBar = () => {
     };
 
     const handleLogout = () => {
-        Cookies.remove('jwtToken');
+        console.log('tap')
+        const allCookies = Cookies.get();
+        Object.keys(allCookies).forEach(cookieName => {
+            Cookies.remove(cookieName);
+        });
         dispatch(userSlice.actions.setAuthStatus(false))
         // dispatch(logoutSession())
     };
@@ -44,14 +49,20 @@ const NavigationBar = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
+                            <Nav.Item className="mx-3">
+                                <Link to="/" className="nav-link ps-0 text-info">
+                                    Меню
+                                </Link>
+                            </Nav.Item>
                             {role == '2' &&
+
                                 <Nav.Item>
                                     <Link to="/cities/admin" className="nav-link ps-0">
-                                        Админка
+                                        Таблица городов
                                     </Link>
                                 </Nav.Item>
                             }
-                            <Nav.Item>
+                            <Nav.Item className="mx-3">
                                 <Link to="/cities" className="nav-link ps-0">
                                     Города
                                 </Link>
@@ -79,7 +90,7 @@ const NavigationBar = () => {
 
                             </Form>
                         }
-                        {isAuth ? (
+                        {jwtToken ? (
                             <>
                                 <Nav>
                                     <Nav.Item className="mx-2">

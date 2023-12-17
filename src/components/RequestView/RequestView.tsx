@@ -7,7 +7,7 @@ import MyComponent from "../Popup/Popover.tsx";
 import {Link} from "react-router-dom";
 import "./DatePickerStyles.css";
 import "./RequestView.css";
-import {Dropdown, Form, Button, Table} from "react-bootstrap";
+import {Dropdown, Form, Button} from "react-bootstrap";
 import {format} from "date-fns";
 import {useNavigate} from 'react-router-dom';
 import Cookies from "js-cookie";
@@ -120,7 +120,7 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
             {/* =================================== TABLE =============================================*/}
 
             {hike &&
-                <Table striped bordered hover className='table-dark'>
+                <table className='table-hikes'>
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -131,7 +131,9 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                         <th>Дата принятия</th>
                         <th>Дата начала похода</th>
                         <th>Автор</th>
-                        <th>Модератор</th>
+                        {role == '2' &&
+                            <th>Модератор</th>
+                        }
                         <th>Статус</th>
                         <th>Лидер</th>
                     </tr>
@@ -147,13 +149,15 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                             <td>{checkData(hike.date_approve)}</td>
                             <td>{checkData(hike.date_start_hike)}</td>
                             <td>{hike.user.user_name || 'Не задан'}</td>
-                            <td>{hike.moderator.user_name || 'Не задан'}</td>
+                            {role == '2' &&
+                                <td>{hike.moderator.user_name || 'Не задан'}</td>
+                            }
                             <td>{hike.status.status_name}</td>
                             <td>{hike.leader || 'На задан'}</td>
                         </tr>
                     ))}
                     </tbody>
-                </Table>
+                </table>
             }
         </>
     );

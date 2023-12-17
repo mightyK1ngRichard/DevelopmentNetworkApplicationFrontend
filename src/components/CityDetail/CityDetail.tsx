@@ -3,6 +3,7 @@ import {useParams, useNavigate} from 'react-router-dom';
 import './CityCard.css'
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
 import {fetchCity} from "../../store/reducers/ActionCreator.ts";
+import Cookies from "js-cookie";
 
 interface CityDetailProps {
     setPage: (name: string, id: number) => void
@@ -13,6 +14,7 @@ const CityDetail: FC<CityDetailProps> = ({setPage}) => {
     const dispatch = useAppDispatch()
     const {city, isLoading, error} = useAppSelector(state => state.cityReducer)
     const navigate = useNavigate();
+    const role = Cookies.get('role')
 
     const handleDelete = () => {
         navigate('/cities');
@@ -70,15 +72,16 @@ const CityDetail: FC<CityDetailProps> = ({setPage}) => {
                     <h3>{city?.city_name}</h3>
                     <h6>Статус: {city?.status.status_name}</h6>
                     <p>{city?.description}</p>
-                    <img
-                        className="delete-button"
-                        src="/deleteTrash.png"
-                        alt="Delete"
-                        onClick={handleDelete}
-                    />
+                    {role == '2' &&
+                        <img
+                            className="delete-button"
+                            src="/deleteTrash.png"
+                            alt="Delete"
+                            onClick={handleDelete}
+                        />
+                    }
                     <div className="buttons">
                         <button className="primary" onClick={BackHandler}>Назад</button>
-                        <button className="primary ghost">Записаться</button>
                     </div>
                 </div>
             </div>}

@@ -9,10 +9,10 @@
     margin-right: 10px;
     text-decoration: none;
     position: relative;
-    padding: 5px 10px; /* Добавленные паддинги */
-    display: inline-block; /* Обеспечивает подгонку размера под содержимое */
-    background-color: #2d2d2d; /* Замените на цвет фона, который вы хотите использовать */
-    border-radius: 20px; /* Замените на нужный вам радиус скругления углов */
+    padding: 5px 10px;
+    display: inline-block;
+    background-color: #2d2d2d;
+    border-radius: 20px;
 }
 
 .breadcrumb-item:last-child {

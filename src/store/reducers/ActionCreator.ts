@@ -15,7 +15,7 @@ import {hikeSlice} from "./HikeSlice.ts";
 import {userSlice} from "./UserSlice.ts";
 
 
-export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatch) => {
+export const fetchCities = (searchValue?: string, makeLoading: boolean = true) => async (dispatch: AppDispatch) => {
     const accessToken = Cookies.get('jwtToken')
     dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
     const config = {
@@ -27,11 +27,13 @@ export const fetchCities = (searchValue?: string) => async (dispatch: AppDispatc
     }
 
     try {
-        dispatch(citySlice.actions.citiesFetching())
+        if (makeLoading) {
+            dispatch(citySlice.actions.citiesFetching())
+        }
         const response = await axios<ICityWithBasket>(config);
         dispatch(citySlice.actions.citiesFetched([response.data.cities, response.data.basket_id]))
     } catch (e) {
-        dispatch(citySlice.actions.citiesFetchedError(`Ошибка: ${e}`))
+        // dispatch(citySlice.actions.citiesFetchedError(`Пожалуйста, авторизуйтесь (`))
         dispatch(citySlice.actions.citiesFetched([filterMockData(searchValue), 0]))
     }
 }
@@ -127,6 +129,7 @@ export const deleteCity = (cityId: number) => async (dispatch: AppDispatch) => {
 
 export const addCityIntoHike = (cityId: number, serialNumber: number, cityName: string) => async (dispatch: AppDispatch) => {
     const accessToken = Cookies.get('jwtToken');
+
     const config = {
         method: "post",
         url: "/api/v3/cities/add-city-into-hike",
@@ -140,12 +143,14 @@ export const addCityIntoHike = (cityId: number, serialNumber: number, cityName: 
     }
 
     try {
-        dispatch(citySlice.actions.citiesFetching())
+        // dispatch(citySlice.actions.citiesFetching())
         const response = await axios(config);
         const errorText = response.data.description ?? ""
         const successText = errorText || `Город "${cityName}" добавлен`
         dispatch(citySlice.actions.cityAddedIntoHike([errorText, successText]));
-        dispatch(fetchCities())
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        dispatch(fetchCities(null, false))
         setTimeout(() => {
             dispatch(citySlice.actions.cityAddedIntoHike(['', '']));
         }, 6000);
@@ -261,6 +266,26 @@ export const fetchHikes = () => async (dispatch: AppDispatch) => {
             status: response.data.status
         };
         dispatch(hikeSlice.actions.hikesFetched(transformedResponse))
+    } catch (e) {
+        dispatch(hikeSlice.actions.hikesFetchedError(`${e}`))
+    }
+}
+
+export const fetchCurrentHike = () => async (dispatch: AppDispatch) => {
+    interface ISingleHikeResponse {
+        hikes: number,
+    }
+
+    const accessToken = Cookies.get('jwtToken');
+    dispatch(userSlice.actions.setAuthStatus(accessToken != null && accessToken != ""));
+    try {
+        const response = await axios.get<ISingleHikeResponse>(`/api/v3/hikes/current`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
+        dispatch(citySlice.actions.setBasket(response.data.hikes))
+
     } catch (e) {
         dispatch(hikeSlice.actions.hikesFetchedError(`${e}`))
     }

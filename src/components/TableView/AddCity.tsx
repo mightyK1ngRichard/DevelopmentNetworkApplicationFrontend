@@ -1,4 +1,4 @@
-import React, {useState, ChangeEvent, FormEvent} from 'react';
+import {useState, ChangeEvent, FormEvent, FC, useEffect} from 'react';
 import {Button, Form, Container, Row, Col} from 'react-bootstrap';
 import {createCity} from "../../store/reducers/ActionCreator.ts";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux.ts";
@@ -11,7 +11,11 @@ interface CityData {
     image: File | null;
 }
 
-const CreateCityPage: React.FC = () => {
+interface AddCityProps {
+    setPage: () => void
+}
+
+const CreateCityPage: FC<AddCityProps> = ({setPage}) => {
     const [cityData, setCityData] = useState<CityData>({
         cityName: '',
         description: '',
@@ -24,6 +28,10 @@ const CreateCityPage: React.FC = () => {
         const {name, value} = e.target;
         setCityData({...cityData, [name]: value});
     };
+
+    useEffect(() => {
+        setPage()
+    }, []);
 
     const save = () => {
         dispatch(createCity(cityData.cityName, cityData.description, cityData.image))

@@ -17,7 +17,7 @@ const initialState: CityState = {
     isLoading: false,
     error: '',
     success: '',
-    serialNumber: 0,
+    serialNumber: 1,
     basketID: 0
 }
 
@@ -29,10 +29,10 @@ export const citySlice = createSlice({
             state.serialNumber += 1
         },
         minus(state) {
-            state.serialNumber = state.serialNumber == 0 ? 0 :  state.serialNumber - 1
+            state.serialNumber = state.serialNumber == 1 ? 1 :  state.serialNumber - 1
         },
         reset(state) {
-            state.serialNumber += 0
+            state.serialNumber = 1
         },
         citiesFetching(state) {
             state.isLoading = true
@@ -48,6 +48,9 @@ export const citySlice = createSlice({
             state.isLoading = false
             state.error = action.payload
             state.success = ''
+        },
+        setBasket(state, action: PayloadAction<number>) {
+            state.basketID = action.payload
         },
         cityAddedIntoHike(state, action: PayloadAction<string[]>) {
             state.isLoading = false
