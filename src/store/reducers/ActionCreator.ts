@@ -22,7 +22,7 @@ export const fetchCities = (searchValue?: string, makeLoading: boolean = true) =
         method: "get",
         url: `/api/v3/cities`+ `?search=${searchValue ?? ''}`,
         headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken ?? ''}`,
         },
     }
 

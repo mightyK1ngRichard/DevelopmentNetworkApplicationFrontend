@@ -11,6 +11,7 @@ import {Dropdown, Form, Button} from "react-bootstrap";
 import {format} from "date-fns";
 import {useNavigate} from 'react-router-dom';
 import Cookies from "js-cookie";
+import {IHike} from "../../models/models.ts";
 
 interface RequestViewProps {
     setPage: () => void;
@@ -25,6 +26,7 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<string>('');
     const role = Cookies.get('role')
+    const [filteredHikes, setFilteredHikes] = useState<IHike[] | null>(null);
 
     useEffect(() => {
         setPage();
@@ -39,6 +41,12 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
         };
     }, [startDate, endDate, selectedStatus]);
 
+    const resetFilter = () => {
+        setStartDate(null)
+        setEndDate(null)
+        setSelectedStatus('')
+    }
+
     const handleFilter = () => {
         const formatDate = (date: Date | null | undefined): string | undefined => {
             if (!date) {
@@ -51,8 +59,37 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
         };
         const formattedStartDate = formatDate(startDate);
         const formattedEndDate = formatDate(endDate);
-        dispatch(fetchHikesFilter(formattedStartDate, formattedEndDate, `${selectedStatus}`));
+        if (role == '2') {
+            dispatch(fetchHikesFilter(formattedStartDate, formattedEndDate, `${selectedStatus}`));
+        } else {
+            localFilter(formattedStartDate, formattedEndDate)
+        }
     };
+
+    function formatDate2(inputDate: string): string {
+        const date = new Date(inputDate);
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // добавляем ведущий ноль, если месяц < 10
+        const day = date.getDate().toString().padStart(2, '0'); // добавляем ведущий ноль, если день < 10
+        const formattedDate = `${year}-${month}-${day}`;
+        return formattedDate;
+    }
+
+    const localFilter = (startDateString: string | undefined, endDateString: string | undefined) => {
+
+        function isDateInRange(date: string): boolean {
+            const bdDateString = formatDate2(date)
+            const bdDate = new Date(bdDateString)
+            const start = startDateString ? new Date(startDateString) : new Date('0001-01-01')
+            const end = endDateString ? new Date(endDateString) : new Date('2033-12-21')
+            return (!startDate || bdDate >= start) && (!endDate || bdDate <= end)
+        }
+
+        if (hike) {
+            const d = hike.hikes.filter(obj => isDateInRange(obj.date_start_of_processing))
+            setFilteredHikes(d)
+        }
+    }
 
     const clickCell = (cellID: number) => {
         navigate(`/hikes/${cellID}`);
@@ -73,8 +110,8 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
             {error !== "" && <MyComponent isError={true} message={error}/>}
             {success !== "" && <MyComponent isError={false} message={success}/>}
 
-            {/* =================================== FILTERS ===========================================*/}
-            {role != '0' &&
+            {/* =================================== FILTERS ======================================*/}
+            {role &&
                 <div className="filter-section d-flex justify-content-end mb-3 pe-4">
                     <Dropdown>
                         <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -98,27 +135,34 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                                 popperPlacement="bottom-start"
                             />
 
-                            <label>Статус похода:</label>
-                            <Form.Select
-                                className='my-2'
-                                value={selectedStatus || ""}
-                                onChange={(e) => setSelectedStatus(e.target.value)}
-                            >
-                                <option value="">Выберите статус</option>
-                                <option value="1">Черновик</option>
-                                <option value="2">Сформирован</option>
-                                <option value="3">Завершён</option>
-                                <option value="4">Отклонён</option>
-                            </Form.Select>
+                            {role == '2' &&
+                                <>
+                                    <label>Статус похода:</label>
+                                    <Form.Select
+                                        className='my-2'
+                                        value={selectedStatus || ""}
+                                        onChange={(e) => setSelectedStatus(e.target.value)}
+                                    >
+                                        <option value="">Выберите статус</option>
+                                        <option value="1">Черновик</option>
+                                        <option value="2">Сформирован</option>
+                                        <option value="3">Завершён</option>
+                                        <option value="4">Отклонён</option>
+                                    </Form.Select>
+                                </>
+                            }
 
-                            <Button onClick={handleFilter}>Применить фильтры</Button>
+                            <Button style={{width: '200px'}} className='mt-2' onClick={handleFilter}>Применить
+                                фильтры</Button>
+                            <Button variant="outline-danger" style={{width: '200px'}} className='mt-2' onClick={resetFilter}>Сбросить
+                                фильтры</Button>
+
                         </Dropdown.Menu>
                     </Dropdown>
                 </div>
             }
 
-            {/* =================================== TABLE =============================================*/}
-
+            {/* =================================== TABLE ADMIN =============================================*/}
             {hike &&
                 <table className='table-hikes'>
                     <thead>
@@ -139,23 +183,38 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                     </tr>
                     </thead>
                     <tbody>
-                    {hike.hikes.map((hike) => (
-                        <tr key={hike.id} onClick={() => clickCell(hike.id)}>
-                            <td>{hike.id}</td>
-                            <td>{hike.hike_name || 'Не задано'}</td>
-                            <td>{checkData(hike.date_created)}</td>
-                            <td>{checkData(hike.date_end)}</td>
-                            <td>{checkData(hike.date_start_of_processing)}</td>
-                            <td>{checkData(hike.date_approve)}</td>
-                            <td>{checkData(hike.date_start_hike)}</td>
-                            <td>{hike.user.user_name || 'Не задан'}</td>
-                            {role == '2' &&
-                                <td>{hike.moderator.user_name || 'Не задан'}</td>
-                            }
-                            <td>{hike.status.status_name}</td>
-                            <td>{hike.leader || 'На задан'}</td>
-                        </tr>
-                    ))}
+                    {filteredHikes && role == '0'
+                        ? filteredHikes.map((hike) => (
+                            <tr key={hike.id} onClick={() => clickCell(hike.id)}>
+                                <td>{hike.id}</td>
+                                <td>{hike.hike_name || 'Не задано'}</td>
+                                <td>{checkData(hike.date_created)}</td>
+                                <td>{checkData(hike.date_end)}</td>
+                                <td>{checkData(hike.date_start_of_processing)}</td>
+                                <td>{checkData(hike.date_approve)}</td>
+                                <td>{checkData(hike.date_start_hike)}</td>
+                                <td>{hike.user.user_name || 'Не задан'}</td>
+                                <td>{hike.status.status_name}</td>
+                                <td>{hike.leader || 'На задан'}</td>
+                            </tr>
+                        ))
+                        : hike.hikes.map((hike) => (
+                            <tr key={hike.id} onClick={() => clickCell(hike.id)}>
+                                <td>{hike.id}</td>
+                                <td>{hike.hike_name || 'Не задано'}</td>
+                                <td>{checkData(hike.date_created)}</td>
+                                <td>{checkData(hike.date_end)}</td>
+                                <td>{checkData(hike.date_start_of_processing)}</td>
+                                <td>{checkData(hike.date_approve)}</td>
+                                <td>{checkData(hike.date_start_hike)}</td>
+                                <td>{hike.user.user_name || 'Не задан'}</td>
+                                {role == '2' &&
+                                    <td>{hike.moderator.user_name || 'Не задан'}</td>
+                                }
+                                <td>{hike.status.status_name}</td>
+                                <td>{hike.leader || 'На задан'}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             }
