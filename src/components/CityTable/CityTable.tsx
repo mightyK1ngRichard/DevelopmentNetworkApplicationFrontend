@@ -35,17 +35,20 @@ const CityTable: FC<CityTableProps> = ({setPage}) => {
                 </Nav.Item>
             </Nav>
             <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название города</th>
+                    <th>Статус</th>
+                    <th>Описание</th>
+                    <th>Изображение</th>
+                </tr>
+                </thead>
                 <tbody>
                 {cities.map(city => (
-                    <tr key={city.id}>
-                        <td>{city.id}</td>
-                        <td>
-                            <CityTableCell
-                                cityData={city}
-                            />
-                        </td>
-                    </tr>
-                ))}
+                    <CityTableCell cityData={city}/>
+                ))
+                }
                 </tbody>
             </table>
         </>

@@ -7,7 +7,7 @@ import MyComponent from "../Popup/Popover.tsx";
 import {Link} from "react-router-dom";
 import "./DatePickerStyles.css";
 import "./RequestView.css";
-import {Dropdown, Form, Button} from "react-bootstrap";
+import {Dropdown, Form, Button, Container, Row, Col} from "react-bootstrap";
 import {format} from "date-fns";
 import {useNavigate} from 'react-router-dom';
 import Cookies from "js-cookie";
@@ -27,17 +27,26 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
     const [selectedStatus, setSelectedStatus] = useState<string>('');
     const role = Cookies.get('role')
     const [filteredHikes, setFilteredHikes] = useState<IHike[] | null>(null);
+    const [filteredByUsers, setFilteredUsers] = useState<IHike[] | null>(null);
+    const [textValue, setTextValue] = useState<string>('');
 
     useEffect(() => {
         setPage();
         dispatch(fetchHikes());
 
-        const intervalId = setInterval(() => {
+        const handleFilterInterval = setInterval(() => {
             handleFilter();
         }, 3000);
 
+        const cleanup = () => {
+            clearInterval(handleFilterInterval);
+        };
+
+        window.addEventListener('beforeunload', cleanup);
+
         return () => {
-            clearInterval(intervalId);
+            cleanup();
+            window.removeEventListener('beforeunload', cleanup);
         };
     }, [startDate, endDate, selectedStatus]);
 
@@ -69,10 +78,10 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
     function formatDate2(inputDate: string): string {
         const date = new Date(inputDate);
         const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // добавляем ведущий ноль, если месяц < 10
-        const day = date.getDate().toString().padStart(2, '0'); // добавляем ведущий ноль, если день < 10
-        const formattedDate = `${year}-${month}-${day}`;
-        return formattedDate;
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
+        const day = date.getDate().toString().padStart(2, '0')
+        const formattedDate = `${year}-${month}-${day}`
+        return formattedDate
     }
 
     const localFilter = (startDateString: string | undefined, endDateString: string | undefined) => {
@@ -103,8 +112,37 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
         );
     }
 
+    const handleInputChange = () => {
+        if (hike) {
+            const d = hike.hikes.filter(obj => obj.user.login == textValue)
+            setFilteredUsers(d.length == 0 ? null : d)
+        }
+    };
+
     return (
         <>
+            <Container className="d-flex justify-content-center">
+                <Row>
+                    <Col>
+                        <Form.Group controlId="exampleForm.ControlInput1">
+                            <Form.Label>Фильтрация по пользователю</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Введите текст"
+                                value={textValue}
+                                onChange={(e) => setTextValue(e.target.value)}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleInputChange();
+                                    }
+                                }}
+                                style={{width: '100%'}}
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+            </Container>
+
             {/* =================================== ALERTS ===========================================*/}
 
             {error !== "" && <MyComponent isError={true} message={error}/>}
@@ -154,7 +192,8 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
 
                             <Button style={{width: '200px'}} className='mt-2' onClick={handleFilter}>Применить
                                 фильтры</Button>
-                            <Button variant="outline-danger" style={{width: '200px'}} className='mt-2' onClick={resetFilter}>Сбросить
+                            <Button variant="outline-danger" style={{width: '200px'}} className='mt-2'
+                                    onClick={resetFilter}>Сбросить
                                 фильтры</Button>
 
                         </Dropdown.Menu>
@@ -198,7 +237,7 @@ const RequestView: FC<RequestViewProps> = ({setPage}) => {
                                 <td>{hike.leader || 'На задан'}</td>
                             </tr>
                         ))
-                        : hike.hikes.map((hike) => (
+                        : (filteredByUsers ? filteredByUsers : hike.hikes).map((hike) => (
                             <tr key={hike.id} onClick={() => clickCell(hike.id)}>
                                 <td>{hike.id}</td>
                                 <td>{hike.hike_name || 'Не задано'}</td>

@@ -56,9 +56,9 @@ const CityTableCell: FC<CityTableCellProps> = ({cityData}) => {
         }
     };
 
-    return (
-        <div>
-            {isEditing ? (
+    if (isEditing) {
+        return <td colSpan={6}>
+            <div>
                 <Form className='mx-5'>
                     <Form.Group as={Col} controlId="formCityName" className='mt-2'>
                         <Form.Label>Название города</Form.Label>
@@ -117,36 +117,35 @@ const CityTableCell: FC<CityTableCellProps> = ({cityData}) => {
                         </Button>
                     </div>
                 </Form>
-            ) : (
-                <div className='mx-5'>
-                    <div>
-                        <p>Название города: {cityData.city_name}</p>
-                        <p>Статус: {cityData.status.status_name}</p>
-                        <p>Описание: {cityData.description}</p>
-                        {cityData.image_url &&
-                            <img src={cityData.image_url}
-                                 alt="City Image"
-                                 className="img-thumbnail"
-                                 style={{width: '200px'}}/>
-                        }
-                    </div>
+            </div>
+        </td>
+    }
 
-                    <div style={{display: 'flex', justifyContent: 'space-between'}} className='my-3'>
-                        <Button variant="outline-warning" onClick={handleEditClick}>
-                            Редактировать
-                        </Button>
+    return (
+        <>
+            <tr key={cityData.id}>
+                <td>{cityData.id}</td>
+                <td>{cityData.city_name}</td>
+                <td>{cityData.status.status_name}</td>
+                <td>{cityData.description}</td>
+                <td>{cityData.image_url &&
+                    <img src={cityData.image_url}
+                         alt="City Image"
+                         className="img-thumbnail"
+                         style={{width: '200px'}}/>
+                }</td>
+                <div className='my-3' style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <Button variant="outline-warning" onClick={handleEditClick} className='mb-2'>
+                        Редактировать
+                    </Button>
 
-                        <div style={{margin: '0 20px'}}></div>
-
-                        <Button variant="outline-danger" onClick={handleDeleteClick}>
-                            Удалить
-                        </Button>
-                    </div>
-
+                    <Button variant="outline-danger" onClick={handleDeleteClick} style={{width: '100%'}}>
+                        Удалить
+                    </Button>
                 </div>
-            )}
-        </div>
-    );
+            </tr>
+        </>
+    )
 };
 
 export default CityTableCell;

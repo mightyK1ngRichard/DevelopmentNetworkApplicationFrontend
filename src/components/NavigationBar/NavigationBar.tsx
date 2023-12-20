@@ -69,7 +69,7 @@ const NavigationBar = () => {
                             </Nav.Item>
                             <Nav.Item>
                                 <Link to="/request" className="nav-link">
-                                    Заявка
+                                    Список заявок
                                 </Link>
                             </Nav.Item>
                         </Nav>
